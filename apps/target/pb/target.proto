@@ -1,0 +1,81 @@
+syntax = "proto3";
+package robot.target;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/target";
+
+service RPC {
+  // 创建消息通知群组信息
+  rpc CreateTarget(Target) returns(Target);
+  // 查看群组信息
+  rpc DescribeTarget(DescribeTargetRequest) returns(Target);
+}
+
+enum ACTIVE {
+  DROP = 0;
+  STATUS_TRANS = 1;
+}
+
+message Target {
+  // id信息
+  // @gotags: bson:"_id" json:"id"
+  string id = 1;
+  // wechat url
+  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  string name = 2;
+  // 创建时间
+  // @gotags: bson:"create_at" json:"create_at"
+  int64 create_at = 3;
+  // wechat url
+  // @gotags: bson:"url" json:"url" validate:"required,lte=64"
+  string url = 4;
+  // robot 密钥信息
+  // @gotags: bson:"secret" json:"secret" validate:"required,lte=64"
+  string secret = 5;
+  // 消息发送规则
+  // @gotags: bson:"rule" json:"rule"
+  repeated Rule rule = 6;
+}
+
+message Rule {
+  // 是否开启
+  // @gotags: bson:"enabled" json:"enabled"
+  bool enabled = 1;
+  // 匹配标签
+  // @gotags: bson:"label" json:"label"
+  string label = 2;
+  // 匹配值
+  // @gotags: bson:"value" json:"value"
+  repeated string value = 3;
+  // 动作
+  // @gotags: bson:"active" json:"active"
+  ACTIVE active = 4;
+  // @其他人
+  // @gotags: bson:"mention" json:"mention"
+  Mention mention = 5;
+}
+
+// 提到的人
+message Mention {
+  // 是否@所有人
+  // @gotags: bson:"all" json:"all"
+  bool all = 1;
+  // @指定的人
+  // @gotags: bson:"mobiles" json:"mobiles"
+  repeated string mobiles = 2;
+}
+
+enum DESCRIBE_BY {
+  ID = 0;
+  NAME = 1;
+}
+
+message DescribeTargetRequest {
+  // 查询方式
+  // @gotags: json:"describe_by"
+  DESCRIBE_BY describe_by = 1;
+  // 通过Id查询
+  // @gotags: json:"id"
+  string id = 2;
+  // 通过name查询
+  // @gotags: json:"name"
+  string name = 3;
+}

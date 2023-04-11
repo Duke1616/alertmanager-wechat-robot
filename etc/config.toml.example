@@ -1,0 +1,16 @@
+[app]
+name = "alertmanager-wechat-robot"
+
+[app.http]
+host = "127.0.0.1"
+port = "8720"
+
+[app.grpc]
+host = "127.0.0.1"
+port = "16890"
+
+[mongodb]
+endpoints = ["127.0.0.1:55001"]
+username = ""
+password = ""
+database = ""
