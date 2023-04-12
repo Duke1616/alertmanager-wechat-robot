@@ -4,6 +4,7 @@ import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
+	"github.com/infraboard/mcube/http/label"
 
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
 	"github.com/emicklei/go-restful/v3"
@@ -39,12 +40,16 @@ func (h *handler) Registry(ws *restful.WebService) {
 
 	ws.Route(ws.POST("/").To(h.CreateRule).
 		Doc("创建策略").
+		Metadata(label.Resource, rule.AppName).
+		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(rule.CreateRuleRequest{}).
 		Writes(rule.Rule{}))
 
 	ws.Route(ws.GET("/{id}").To(h.DescribeRule).
 		Doc("查询策略详细信息").
+		Metadata(label.Resource, rule.AppName).
+		Metadata(label.Auth, true).
 		Param(ws.PathParameter("id", "identifier of the rule").DataType("integer").DefaultValue("1")).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(target.Target{}).
@@ -53,6 +58,8 @@ func (h *handler) Registry(ws *restful.WebService) {
 
 	ws.Route(ws.GET("/").To(h.QueryRule).
 		Doc("查询策略").
+		Metadata(label.Resource, rule.AppName).
+		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(rule.QueryRuleRequest{}).
 		Writes(rule.RuleSet{}).

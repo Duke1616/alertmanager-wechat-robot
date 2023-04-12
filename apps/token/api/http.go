@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/token"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
+	"github.com/infraboard/mcube/http/label"
 
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
 	"github.com/emicklei/go-restful/v3"
@@ -38,12 +39,16 @@ func (h *handler) Registry(ws *restful.WebService) {
 
 	ws.Route(ws.POST("/issue").To(h.IssueToken).
 		Doc("创建token").
+		Metadata(label.Resource, token.AppName).
+		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(token.IssueTokenRequest{}).
 		Writes(token.Token{}))
 
 	ws.Route(ws.GET("/validate").To(h.ValidateToken).
 		Doc("验证token").
+		Metadata(label.Resource, token.AppName).
+		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(token.ValidateTokenRequest{}).
 		Writes(token.Token{}).

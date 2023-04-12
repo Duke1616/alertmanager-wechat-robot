@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package robot.endpoint;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/endpoint";
+
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+
+service RPC {
+  rpc RegistryEndpoint(RegistryRequest) returns(RegistryResponse);
+}
+
+message Endpoint {
+  // 端点名称
+  // @gotags: bson:"_id" json:"id" validate:"required,lte=64"
+  string id = 1;
+  // 创建时间
+  // @gotags: bson:"create_at" json:"create_at,omitempty"
+  int64 create_at = 2;
+  // 更新时间
+  // @gotags: bson:"update_at" json:"update_at,omitempty"
+  int64 update_at = 3;
+  // 服务那个版本的功能
+  // @gotags: bson:"version" json:"version,omitempty" validate:"required,lte=64"
+  string version = 4;
+  // 路由条目信息
+  // @gotags: bson:"entry" json:"entry" validate:"required"
+  Entry entry = 5;
+}
+
+message EndpointSet {
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // @gotags: bson:"items" json:"items"
+  repeated Endpoint items = 2;
+}
+
+message RegistryRequest {
+  // @gotags: json:"version" validate:"required,lte=32"
+  string version = 1;
+  // @gotags: json:"entries"
+  repeated Entry entries = 2;
+}
+
+message Entry {
+  // 函数名称
+  // @gotags: bson:"function_name" json:"function_name"
+  string function_name = 1;
+  // HTTP path 用于自动生成http api
+  // @gotags: bson:"path" json:"path"
+  string path = 2;
+  // HTTP method 用于自动生成http api
+  // @gotags: bson:"method" json:"method"
+  string method = 3;
+  // 资源名称
+  // @gotags: bson:"resource" json:"resource"
+  string resource = 4;
+  // 是否校验用户身份 (acccess_token)
+  // @gotags: bson:"auth_enable" json:"auth_enable"
+  bool auth_enable = 5;
+}
+
+message RegistryResponse {
+  // @gotags: json:"message"
+  string message = 1;
+}
+
+// QueryEndpointRequest 查询应用列表
+message QueryEndpointRequest {
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // @gotags: json:"path"
+  string path = 2;
+  // @gotags: json:"method"
+  string method = 3;
+  // @gotags: json:"function_name"
+  string function_name = 4;
+  // @gotags: json:"resources"
+  repeated string resources = 5;
+}

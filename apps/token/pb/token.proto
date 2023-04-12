@@ -11,6 +11,8 @@ service RPC {
   rpc IssueToken(IssueTokenRequest) returns (Token);
   // 校验Token
   rpc ValidateToken(ValidateTokenRequest) returns (Token);
+  // 查询Token详情
+  rpc DescribeToken(DescribeTokenRequest) returns (Token);
   // 删除Token
   rpc RemoveToken(RemoveTokenRequest) returns (Token);
 }
@@ -67,4 +69,19 @@ message RemoveTokenRequest {
   // 令牌
   // @gotags: json:"access_token"
   string access_token = 1;
+}
+
+
+enum DESCRIBE_BY {
+  // 通过access token查看
+  ACCESS_TOKEN = 0;
+}
+
+message DescribeTokenRequest {
+  // 参数类型
+  // @gotags: json:"describe_by"
+  DESCRIBE_BY describe_by = 1;
+  // 参数值
+  // @gotags: json:"access_token"
+  string access_token = 2;
 }

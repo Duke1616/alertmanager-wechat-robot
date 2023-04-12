@@ -116,7 +116,7 @@ func NewHashedPassword(password string) (string, error) {
 func CheckPassword(password, haPass string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(haPass), []byte(password))
 	if err != nil {
-		return exception.NewUnauthorized("user or password not connrect")
+		return exception.NewUnauthorized("user or password not connect")
 	}
 
 	return nil

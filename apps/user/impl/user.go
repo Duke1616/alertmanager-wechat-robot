@@ -86,7 +86,7 @@ func (s *service) QueryUser(ctx context.Context, req *user.QueryUserRequest) (*u
 	return set, nil
 }
 
-func (s *service) validate(ctx context.Context, req *user.ValidateRequest) (*user.User, error) {
+func (s *service) ValidateUser(ctx context.Context, req *user.ValidateRequest) (*user.User, error) {
 	if req.Name == "" || req.Password == "" {
 		return nil, exception.NewUnauthorized("Account or password does not exist")
 	}
@@ -94,16 +94,19 @@ func (s *service) validate(ctx context.Context, req *user.ValidateRequest) (*use
 	// 检测用户的密码是否正确
 	u, err := s.DescribeUser(ctx, user.NewDescribeUserRequestByName(req.Name))
 	if err != nil {
+		s.log.Errorf("Account or password does not exist")
 		return nil, err
 	}
 
 	// 判断用户类型是否可以正常登陆
 	if u.UserType != user.USER_TYPE_SYSTEM {
+		s.log.Errorf("Account type refused login")
 		return nil, exception.NewUnauthorized("Account type refused login")
 	}
 
-	err = user.CheckPassword(u.Spec.Password, req.Password)
+	err = user.CheckPassword(req.Password, u.Spec.Password)
 	if err != nil {
+		s.log.Errorf("Account or password does not exist")
 		return nil, exception.NewUnauthorized("Account or password does not exist")
 	}
 

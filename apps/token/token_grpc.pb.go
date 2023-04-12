@@ -26,6 +26,8 @@ type RPCClient interface {
 	IssueToken(ctx context.Context, in *IssueTokenRequest, opts ...grpc.CallOption) (*Token, error)
 	// 校验Token
 	ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*Token, error)
+	// 查询Token详情
+	DescribeToken(ctx context.Context, in *DescribeTokenRequest, opts ...grpc.CallOption) (*Token, error)
 	// 删除Token
 	RemoveToken(ctx context.Context, in *RemoveTokenRequest, opts ...grpc.CallOption) (*Token, error)
 }
@@ -56,6 +58,15 @@ func (c *rPCClient) ValidateToken(ctx context.Context, in *ValidateTokenRequest,
 	return out, nil
 }
 
+func (c *rPCClient) DescribeToken(ctx context.Context, in *DescribeTokenRequest, opts ...grpc.CallOption) (*Token, error) {
+	out := new(Token)
+	err := c.cc.Invoke(ctx, "/robot.token.RPC/DescribeToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCClient) RemoveToken(ctx context.Context, in *RemoveTokenRequest, opts ...grpc.CallOption) (*Token, error) {
 	out := new(Token)
 	err := c.cc.Invoke(ctx, "/robot.token.RPC/RemoveToken", in, out, opts...)
@@ -73,6 +84,8 @@ type RPCServer interface {
 	IssueToken(context.Context, *IssueTokenRequest) (*Token, error)
 	// 校验Token
 	ValidateToken(context.Context, *ValidateTokenRequest) (*Token, error)
+	// 查询Token详情
+	DescribeToken(context.Context, *DescribeTokenRequest) (*Token, error)
 	// 删除Token
 	RemoveToken(context.Context, *RemoveTokenRequest) (*Token, error)
 	mustEmbedUnimplementedRPCServer()
@@ -87,6 +100,9 @@ func (UnimplementedRPCServer) IssueToken(context.Context, *IssueTokenRequest) (*
 }
 func (UnimplementedRPCServer) ValidateToken(context.Context, *ValidateTokenRequest) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateToken not implemented")
+}
+func (UnimplementedRPCServer) DescribeToken(context.Context, *DescribeTokenRequest) (*Token, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DescribeToken not implemented")
 }
 func (UnimplementedRPCServer) RemoveToken(context.Context, *RemoveTokenRequest) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveToken not implemented")
@@ -140,6 +156,24 @@ func _RPC_ValidateToken_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_DescribeToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DescribeTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).DescribeToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.token.RPC/DescribeToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).DescribeToken(ctx, req.(*DescribeTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPC_RemoveToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RemoveTokenRequest)
 	if err := dec(in); err != nil {
@@ -172,6 +206,10 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateToken",
 			Handler:    _RPC_ValidateToken_Handler,
+		},
+		{
+			MethodName: "DescribeToken",
+			Handler:    _RPC_DescribeToken_Handler,
 		},
 		{
 			MethodName: "RemoveToken",

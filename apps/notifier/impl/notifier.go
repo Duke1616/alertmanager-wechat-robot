@@ -96,8 +96,6 @@ func (s *service) TransFormToWechat(ctx context.Context, req *notifier.Notificat
 }
 
 func (s *service) send(wechatUrl string, md *notifier.Message) error {
-	fmt.Println(md)
-
 	data, err := json.Marshal(md)
 	if err != nil {
 		return err

@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
+	"github.com/infraboard/mcube/http/label"
 
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
 	"github.com/emicklei/go-restful/v3"
@@ -38,12 +39,16 @@ func (h *handler) Registry(ws *restful.WebService) {
 
 	ws.Route(ws.POST("/").To(h.CreateUser).
 		Doc("创建用户").
+		Metadata(label.Resource, user.AppName).
+		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(user.User{}).
 		Writes(user.User{}))
 
 	ws.Route(ws.GET("/{id}").To(h.DescribeUser).
 		Doc("查询用户详情信息").
+		Metadata(label.Resource, user.AppName).
+		Metadata(label.Auth, true).
 		Param(ws.PathParameter("id", "identifier of the user").DataType("integer").DefaultValue("1")).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(user.DescribeUserRequest{}).
@@ -53,6 +58,8 @@ func (h *handler) Registry(ws *restful.WebService) {
 
 	ws.Route(ws.GET("/").To(h.QueryUser).
 		Doc("查询条件匹配用户信息").
+		Metadata(label.Resource, user.AppName).
+		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(user.QueryUserRequest{}).
 		Writes(user.UserSet{}).

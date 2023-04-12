@@ -23,5 +23,13 @@ func (h *handler) IssueToken(r *restful.Request, w *restful.Response) {
 }
 
 func (h *handler) ValidateToken(r *restful.Request, w *restful.Response) {
+	req := token.NewValidateTokenRequestFromHTTP(r.Request)
 
+	ins, err := h.service.ValidateToken(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+
+	response.Success(w, ins)
 }

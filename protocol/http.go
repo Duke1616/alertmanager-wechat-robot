@@ -3,6 +3,9 @@ package protocol
 import (
 	"context"
 	"fmt"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/endpoint"
+	"github.com/Duke1616/alertmanager-wechat-robot/protocol/auth"
+	"github.com/Duke1616/alertmanager-wechat-robot/version"
 	"net/http"
 	"time"
 
@@ -25,7 +28,7 @@ func NewHTTPService() *HTTPService {
 	// http.Handle("/apidocs/", http.StripPrefix("/apidocs/", http.FileServer(http.Dir("/Users/emicklei/Projects/swagger-ui/dist"))))
 
 	// Optionally, you may need to enable CORS for the UI to work.
-	restful.EnableTracing(true)
+	//restful.EnableTracing(true)
 	cors := restful.CrossOriginResourceSharing{
 		AllowedHeaders: []string{"*"},
 		//AllowedDomains: []string{"*"},
@@ -35,6 +38,9 @@ func NewHTTPService() *HTTPService {
 	r.Filter(cors.Filter)
 
 	r.Filter(r.OPTIONSFilter)
+
+	// 添加鉴权中间件
+	r.Filter(auth.NewHttpAuthor().GoRestfulAuthFunc)
 
 	server := &http.Server{
 		ReadHeaderTimeout: 60 * time.Second,
@@ -47,10 +53,11 @@ func NewHTTPService() *HTTPService {
 	}
 
 	return &HTTPService{
-		r:      r,
-		server: server,
-		l:      zap.L().Named("HTTP Service"),
-		c:      conf.C(),
+		r:           r,
+		server:      server,
+		l:           zap.L().Named("HTTP Service"),
+		c:           conf.C(),
+		endpointRpc: app.GetInternalApp(endpoint.AppName).(endpoint.RPCServer),
 	}
 }
 
@@ -60,6 +67,8 @@ type HTTPService struct {
 	l      logger.Logger
 	c      *conf.Config
 	server *http.Server
+
+	endpointRpc endpoint.RPCServer
 }
 
 func (s *HTTPService) PathPrefix() string {
@@ -70,6 +79,9 @@ func (s *HTTPService) PathPrefix() string {
 func (s *HTTPService) Start() error {
 	// 装置子服务路由
 	app.LoadRestfulApp(s.PathPrefix(), s.r)
+
+	// 注册服务
+	s.RegistryEndpoint()
 
 	// API Doc
 	config := restfulspec.Config{
@@ -108,4 +120,25 @@ func (s *HTTPService) Stop() error {
 		s.l.Errorf("graceful shutdown timeout, force exit")
 	}
 	return nil
+}
+
+func (s *HTTPService) RegistryEndpoint() {
+	// 注册服务权限条目
+	s.l.Info("start registry endpoints ...")
+
+	var entries []*endpoint.Entry
+	wss := s.r.RegisteredWebServices()
+	for i := range wss {
+		es := endpoint.TransferRoutesToEntry(wss[i].Routes())
+		entries = append(entries, es...)
+	}
+
+	req := endpoint.NewRegistryRequest(version.Short(), entries)
+
+	_, err := s.endpointRpc.RegistryEndpoint(context.Background(), req)
+	if err != nil {
+		s.l.Warnf("registry endpoints error, %s", err)
+	} else {
+		s.l.Debug("service endpoints registry success")
+	}
 }
