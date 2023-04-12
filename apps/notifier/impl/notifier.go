@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notifier"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net/http"
@@ -19,19 +20,26 @@ func (s *service) SendWechatRobot(ctx context.Context, req *notifier.Notificatio
 
 	notifierWechat := notifier.NewNotifierWechat(req.Notification)
 
-	// 规则的判断，是否报警预处理
-	err = notifierWechat.HasRule(t)
+	// 查询所有rule
+	rs, err := s.rule.QueryRule(ctx, rule.NewQueryRuleRequest(t.Id))
 	if err != nil {
 		return nil, err
 	}
 
-	md, err := s.TransFormToWechat(ctx, notifierWechat)
+	// 规则判断，数据预处理
+	err = notifierWechat.HasRule(rs)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
-	wechatUrl := fmt.Sprintf("%s%s", t.Url, t.Secret)
+	// 报警信息拼接
+	md, err := s.TransFormToWechat(ctx, notifierWechat)
+	if err != nil {
+		return nil, err
+	}
 
+	// 发送消息通知
+	wechatUrl := fmt.Sprintf("%s%s", t.Url, t.Secret)
 	err = s.send(wechatUrl, md)
 	if err != nil {
 		return nil, err
@@ -44,20 +52,37 @@ func (s *service) TransFormToWechat(ctx context.Context, req *notifier.Notificat
 	status := req.Notification.Status
 
 	var buffer bytes.Buffer
-	for _, value := range req.Mention.Mobiles {
-		buffer.WriteString(fmt.Sprintf("### 当前状态:%s, 数量: %d @%s \n", status, len(req.Notification.Alerts), value))
+	// 查看状态
+	if status == "firing" {
+		buffer.WriteString(fmt.Sprintf("<font color=\"warning\">**告警状态：%s  报警数量: %d**</font> \n", status, len(req.Notification.Alerts)))
+	} else {
+		buffer.WriteString(fmt.Sprintf("<font color=\"info\">**告警状态：%s  报警数量: %d**</font> \n", status, len(req.Notification.Alerts)))
 	}
 
+	// 消息通知
+	if req.Mention.All == true {
+		// TODO 目前企业微信机器人不支持@所有人，需要单独扩展
+		buffer.WriteString(fmt.Sprintf("\n通知相关人员: <font color=\"info\"><@all></font>"))
+	} else {
+		for _, men := range req.Mention.Mobiles {
+			buffer.WriteString(fmt.Sprintf("\n通知相关人员: <font color=\"info\"><@%s></font>", men))
+		}
+	}
+
+	// 报警相关信息
 	for _, alert := range req.Notification.Alerts {
 		labels := alert.Labels
 		buffer.WriteString(fmt.Sprintf("\n>告警级别: %s", labels["severity"]))
 		buffer.WriteString(fmt.Sprintf("\n>告警类型: %s", labels["alertname"]))
 		buffer.WriteString(fmt.Sprintf("\n>告警主机: %s", labels["instance"]))
 		annotations := alert.Annotations
-		buffer.WriteString(fmt.Sprintf("\n>告警主题: %s", annotations["summary"]))
+		buffer.WriteString(fmt.Sprintf("\n>告警主题: <font color=\"info\">**%s**</font>", annotations["summary"]))
 		buffer.WriteString(fmt.Sprintf("\n>告警详情: %s", annotations["description"]))
 		buffer.WriteString(fmt.Sprintf("\n>告警时间: %s\n", alert.StartsAt.AsTime().Format("2006-01-02 15:04:05")))
-		buffer.WriteString(fmt.Sprint("\n=============华丽的分割线条=============="))
+		if len(req.Notification.Alerts) != 1 {
+			buffer.WriteString(fmt.Sprint("\n=============华丽的分割线线=============="))
+		}
+
 	}
 
 	markdown := &notifier.Message{

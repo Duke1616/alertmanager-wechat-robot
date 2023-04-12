@@ -1,11 +1,10 @@
 package impl
 
 import (
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/notifier"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
+	"github.com/Duke1616/alertmanager-wechat-robot/conf"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
-
 	"github.com/infraboard/mcube/logger"
 	"github.com/infraboard/mcube/logger/zap"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,26 +19,29 @@ var (
 type service struct {
 	col *mongo.Collection
 	log logger.Logger
-	notifier.UnimplementedRPCServer
-
+	rule.UnimplementedRPCServer
 	target target.RPCServer
-	rule   rule.RPCServer
 }
 
 func (s *service) Config() error {
 	s.log = zap.L().Named(s.Name())
+	// 依赖MongoDB的DB对象
+	db, err := conf.C().Mongo.GetDB()
+	if err != nil {
+		return err
+	}
 
 	s.target = app.GetGrpcApp("target").(target.RPCServer)
-	s.rule = app.GetGrpcApp("rule").(rule.RPCServer)
+	s.col = db.Collection(s.Name())
 	return nil
 }
 
 func (s *service) Name() string {
-	return notifier.AppName
+	return rule.AppName
 }
 
 func (s *service) Registry(server *grpc.Server) {
-	notifier.RegisterRPCServer(server, svr)
+	rule.RegisterRPCServer(server, svr)
 }
 
 func init() {

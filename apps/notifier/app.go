@@ -1,7 +1,7 @@
 package notifier
 
 import (
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
 	"net/http"
 )
 
@@ -16,42 +16,43 @@ func NewQueryTargetRequestFromHTTP(r *http.Request, name string) string {
 
 func NewNotifierWechat(req *Notification) *NotificationWechat {
 	return &NotificationWechat{
-		Mention:      &target.Mention{},
+		Mention:      &rule.Mention{},
 		Notification: req,
 	}
 }
 
-func (n *NotificationWechat) HasRule(t *target.Target) error {
-	for _, rule := range t.Rule {
-		if rule.Enabled != true {
+func (n *NotificationWechat) HasRule(ruleSet *rule.RuleSet) error {
+	// TODO 根据target ID 获取所有的rule
+	for _, r := range ruleSet.Items {
+		if r.Enabled != true {
 			continue
 		}
 
-		switch rule.LabelType {
-		case target.LABEL_TYPE_GROUP:
-			value, ok := n.Notification.GroupLabels[rule.Label]
+		switch r.Spec.LabelType {
+		case rule.LABEL_TYPE_GROUP:
+			value, ok := n.Notification.GroupLabels[r.Spec.Label]
 			if ok {
-				n.HasActive(rule, value)
+				n.HasActive(r, value)
 			}
-		case target.LABEL_TYPE_COMMON:
-			value, ok := n.Notification.CommonLabels[rule.Label]
+		case rule.LABEL_TYPE_COMMON:
+			value, ok := n.Notification.CommonLabels[r.Spec.Label]
 			if ok {
-				n.HasActive(rule, value)
+				n.HasActive(r, value)
 			}
 		}
 	}
 	return nil
 }
 
-func (n *NotificationWechat) HasActive(rule *target.Rule, value string) error {
-	for _, v := range rule.Value {
+func (n *NotificationWechat) HasActive(r *rule.Rule, value string) error {
+	for _, v := range r.Spec.Value {
 		if v == value {
-			switch rule.Active {
-			case target.ACTIVE_NEWS:
-				n.Mention = rule.Mention
-			case target.ACTIVE_DROP:
+			switch r.Spec.Active {
+			case rule.ACTIVE_NEWS:
+				n.Mention = r.Spec.Mention
+			case rule.ACTIVE_DROP:
 				return nil
-			case target.ACTIVE_STATUS_TRANS:
+			case rule.ACTIVE_STATUS_TRANS:
 				n.Notification.Status = value
 			default:
 				return nil

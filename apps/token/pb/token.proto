@@ -1,0 +1,3 @@
+syntax = "proto3";
+package robot.token;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/token";

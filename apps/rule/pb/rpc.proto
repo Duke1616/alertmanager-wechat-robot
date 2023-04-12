@@ -1,0 +1,41 @@
+syntax = "proto3";
+package robot.rule;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/rule";
+
+import "apps/rule/pb/rule.proto";
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+
+service RPC {
+  // 创建规则信息
+  rpc CreateRule(CreateRuleRequest) returns(Rule);
+  // 查看规则信息
+  rpc DescribeRule(DescribeRuleRequest) returns(Rule);
+  // 查询群组下的所有规则
+  rpc QueryRule(QueryRuleRequest) returns(RuleSet);
+}
+
+enum DESCRIBE_BY {
+  // 通过rule id
+  id = 0;
+}
+
+message DescribeRuleRequest {
+  // 查询详情的方式
+  // @gotags: json:"describe_by"
+  DESCRIBE_BY describe_by = 1;
+  // 服务客户端Id
+  // @gotags: json:"id"
+  string id = 2;
+}
+
+message QueryRuleRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // rule相关target id
+  // @gotags: json:"target_id"
+  string target_id = 2;
+  // rule相关target id
+  // @gotags: json:"label_type"
+  LABEL_TYPE label_type = 3;
+}

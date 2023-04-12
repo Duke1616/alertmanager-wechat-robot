@@ -1,0 +1,73 @@
+syntax = "proto3";
+package robot.rule;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/rule";
+
+enum ACTIVE {
+  NEWS = 0;
+  // 状态转换
+  STATUS_TRANS = 2;
+  // 丢弃报警
+  DROP = 1;
+}
+
+enum LABEL_TYPE {
+  // 组策略标签匹配
+  GROUP = 0;
+  // 全局配置标签匹配
+  COMMON = 1;
+}
+
+message Rule {
+  // rule ID
+  // @gotags: bson:"_id" json:"id"
+  string id = 1;
+  // 是否开启
+  // @gotags: bson:"enabled" json:"enabled"
+  bool enabled = 2;
+  // 创建时间
+  // @gotags: bson:"create_at" json:"create_at"
+  int64 create_at = 3;
+  // 创建信息
+  // @gotags: bson:"spec" json:"spec"
+  CreateRuleRequest spec = 4;
+}
+
+message RuleSet {
+  // 总数量
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // 数据
+  // @gotags: bson:"items" json:"items"
+  repeated Rule items = 2;
+}
+
+message CreateRuleRequest {
+  // 关联target ID
+  // @gotags: bson:"target_id" json:"target_id" validate:"required,lte=64"
+  string target_id = 1;
+  // 标签类型
+  // @gotags: bson:"label_type" json:"label_type"
+  LABEL_TYPE label_type = 2;
+  // 匹配标签
+  // @gotags: bson:"label" json:"label" validate:"required,lte=64"
+  string label = 3;
+  // 匹配值
+  // @gotags: bson:"value" json:"value"
+  repeated string value = 4;
+  // 动作
+  // @gotags: bson:"active" json:"active"
+  ACTIVE active = 5;
+  // @其他人
+  // @gotags: bson:"mention" json:"mention"
+  Mention mention = 6;
+}
+
+// 提到的人
+message Mention {
+  // 是否@所有人
+  // @gotags: bson:"all" json:"all"
+  bool all = 1;
+  // @指定的人
+  // @gotags: bson:"mobiles" json:"mobiles"
+  repeated string mobiles = 2;
+}

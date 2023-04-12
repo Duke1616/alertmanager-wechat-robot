@@ -2,33 +2,22 @@ syntax = "proto3";
 package robot.target;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/target";
 
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+
 service RPC {
   // 创建消息通知群组信息
   rpc CreateTarget(Target) returns(Target);
-  // 查看群组信息
+  // 查看群组详细信息
   rpc DescribeTarget(DescribeTargetRequest) returns(Target);
-}
-
-enum ACTIVE {
-  NEWS = 0;
-  // 状态转换
-  STATUS_TRANS = 2;
-  // 丢弃报警
-  DROP = 1;
-}
-
-enum LABEL_TYPE {
-  // 组策略标签匹配
-  GROUP = 0;
-  // 全局配置标签匹配
-  COMMON = 1;
+//  查看群组信息
+  rpc QueryTarget(QueryTargetRequest) returns(TargetSet);
 }
 
 message Target {
   // id信息
   // @gotags: bson:"_id" json:"id"
   string id = 1;
-  // wechat url
+  // 群组名称
   // @gotags: bson:"name" json:"name" validate:"required,lte=64"
   string name = 2;
   // 创建时间
@@ -40,41 +29,20 @@ message Target {
   // robot 密钥信息
   // @gotags: bson:"secret" json:"secret" validate:"required,lte=64"
   string secret = 5;
-  // 消息发送规则
-  // @gotags: bson:"rule" json:"rule"
-  repeated Rule rule = 6;
+  // 描述信息
+  // @gotags: bson:"description" json:"description"
+  string description = 6;
 }
 
-message Rule {
-  // 是否开启
-  // @gotags: bson:"enabled" json:"enabled"
-  bool enabled = 1;
-  // 标签类型
-  // @gotags: bson:"label_type" json:"label_type"
-  LABEL_TYPE label_type = 2;
-  // 匹配标签
-  // @gotags: bson:"label" json:"label"
-  string label = 3;
-  // 匹配值
-  // @gotags: bson:"value" json:"value"
-  repeated string value = 4;
-  // 动作
-  // @gotags: bson:"active" json:"active"
-  ACTIVE active = 5;
-  // @其他人
-  // @gotags: bson:"mention" json:"mention"
-  Mention mention = 6;
+message TargetSet {
+  // 总数量
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // 数据
+  // @gotags: bson:"items" json:"items"
+  repeated Target items = 2;
 }
 
-// 提到的人
-message Mention {
-  // 是否@所有人
-  // @gotags: bson:"all" json:"all"
-  bool all = 1;
-  // @指定的人
-  // @gotags: bson:"mobiles" json:"mobiles"
-  repeated string mobiles = 2;
-}
 
 enum DESCRIBE_BY {
   ID = 0;
@@ -91,4 +59,17 @@ message DescribeTargetRequest {
   // 通过name查询
   // @gotags: json:"name"
   string name = 3;
+}
+
+
+message QueryTargetRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // url信息
+  // @gotags: json:"url"
+  string url = 2;
+  // secret信息
+  // @gotags: json:"secret"
+  string secret = 3;
 }

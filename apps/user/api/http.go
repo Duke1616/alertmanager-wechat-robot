@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 
 	restfulspec "github.com/emicklei/go-restful-openapi/v2"
@@ -15,13 +16,13 @@ var (
 )
 
 type handler struct {
-	service target.RPCServer
+	service user.RPCServer
 	log     logger.Logger
 }
 
 func (h *handler) Config() error {
-	h.log = zap.L().Named(target.AppName)
-	h.service = app.GetGrpcApp(target.AppName).(target.RPCServer)
+	h.log = zap.L().Named(user.AppName)
+	h.service = app.GetGrpcApp(user.AppName).(user.RPCServer)
 	return nil
 }
 
@@ -34,28 +35,29 @@ func (h *handler) Version() string {
 }
 
 func (h *handler) Registry(ws *restful.WebService) {
-	tags := []string{"群组信息"}
+	tags := []string{"用户信息"}
 
-	ws.Route(ws.POST("/").To(h.CreateTarget).
-		Doc("创建消息通知群组信息").
+	ws.Route(ws.POST("/").To(h.CreateUser).
+		Doc("创建用户").
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(target.Target{}).
-		Writes(target.Target{}))
+		Reads(user.User{}).
+		Writes(user.User{}))
 
-	ws.Route(ws.GET("/{id}").To(h.DescribeTarget).
-		Doc("查询群组详细信息").
-		Param(ws.PathParameter("id", "identifier of the target").DataType("integer").DefaultValue("1")).
+	ws.Route(ws.GET("/{id}").To(h.DescribeUser).
+		Doc("查询用户详情信息").
+		Param(ws.PathParameter("id", "identifier of the user").DataType("integer").DefaultValue("1")).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Writes(target.Target{}).
-		Returns(200, "OK", target.Target{}).
+		Reads(user.DescribeUserRequest{}).
+		Writes(user.User{}).
+		Returns(200, "OK", user.User{}).
 		Returns(404, "Not Found", nil))
 
-	ws.Route(ws.GET("/").To(h.QueryTarget).
-		Doc("查询消息群组信息").
+	ws.Route(ws.GET("/").To(h.QueryUser).
+		Doc("查询条件匹配用户信息").
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(target.QueryTargetRequest{}).
-		Writes(target.TargetSet{}).
-		Returns(200, "OK", target.TargetSet{}).
+		Reads(user.QueryUserRequest{}).
+		Writes(user.UserSet{}).
+		Returns(200, "OK", user.UserSet{}).
 		Returns(404, "Not Found", nil))
 }
 

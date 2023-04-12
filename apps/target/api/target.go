@@ -23,9 +23,20 @@ func (h *handler) CreateTarget(r *restful.Request, w *restful.Response) {
 }
 
 func (h *handler) DescribeTarget(r *restful.Request, w *restful.Response) {
-	req := target.NewDescribeTargetRequestByName(r.Request.URL.Query().Get("name"))
+	req := target.NewDescribeTargetRequestById(r.PathParameter("id"))
 
 	ins, err := h.service.DescribeTarget(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+
+	response.Success(w, ins)
+}
+
+func (h *handler) QueryTarget(r *restful.Request, w *restful.Response) {
+	req := target.NewQueryTargetRequestFromHTTP(r.Request)
+	ins, err := h.service.QueryTarget(r.Request.Context(), req)
 	if err != nil {
 		response.Failed(w, err)
 		return

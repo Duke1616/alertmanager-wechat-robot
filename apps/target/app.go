@@ -2,7 +2,9 @@ package target
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/infraboard/mcube/http/request"
 	"github.com/rs/xid"
+	"net/http"
 	"time"
 )
 
@@ -27,7 +29,6 @@ func NewTarget(req *Target) (*Target, error) {
 		Id:       xid.New().String(),
 		CreateAt: time.Now().UnixMilli(),
 		Name:     req.Name,
-		Rule:     req.Rule,
 		Url:      req.Url,
 		Secret:   req.Secret,
 	}
@@ -40,9 +41,7 @@ func (req *DescribeTargetRequest) Validate() error {
 }
 
 func NewDefaultTarget() *Target {
-	return &Target{
-		Rule: []*Rule{},
-	}
+	return &Target{}
 }
 
 // NewDescribeTargetRequestById 查询详情请求
@@ -59,4 +58,37 @@ func NewDescribeTargetRequestByName(name string) *DescribeTargetRequest {
 		DescribeBy: DESCRIBE_BY_NAME,
 		Name:       name,
 	}
+}
+
+func NewQueryTargetRequestFromHTTP(r *http.Request) *QueryTargetRequest {
+	page := request.NewPageRequestFromHTTP(r)
+
+	qs := r.URL.Query()
+	req := NewDefaultQueryTargetRequest()
+	req.Url = qs.Get("url")
+	req.Secret = qs.Get("secret")
+
+	req.Page = page
+	return req
+}
+
+func NewDefaultQueryTargetRequest() *QueryTargetRequest {
+	return &QueryTargetRequest{
+		Page: request.NewDefaultPageRequest(),
+	}
+}
+
+func (req *QueryTargetRequest) Validate() error {
+	return validate.Struct(req)
+}
+
+func NewTargetSet() *TargetSet {
+	return &TargetSet{
+		Items: []*Target{},
+	}
+}
+
+func (s *TargetSet) Add(item *Target) {
+	s.Total++
+	s.Items = append(s.Items, item)
 }

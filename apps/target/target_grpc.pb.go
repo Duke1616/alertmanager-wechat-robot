@@ -24,8 +24,10 @@ const _ = grpc.SupportPackageIsVersion7
 type RPCClient interface {
 	// 创建消息通知群组信息
 	CreateTarget(ctx context.Context, in *Target, opts ...grpc.CallOption) (*Target, error)
-	// 查看群组信息
+	// 查看群组详细信息
 	DescribeTarget(ctx context.Context, in *DescribeTargetRequest, opts ...grpc.CallOption) (*Target, error)
+	//  查看群组信息
+	QueryTarget(ctx context.Context, in *QueryTargetRequest, opts ...grpc.CallOption) (*TargetSet, error)
 }
 
 type rPCClient struct {
@@ -54,14 +56,25 @@ func (c *rPCClient) DescribeTarget(ctx context.Context, in *DescribeTargetReques
 	return out, nil
 }
 
+func (c *rPCClient) QueryTarget(ctx context.Context, in *QueryTargetRequest, opts ...grpc.CallOption) (*TargetSet, error) {
+	out := new(TargetSet)
+	err := c.cc.Invoke(ctx, "/robot.target.RPC/QueryTarget", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCServer is the server API for RPC service.
 // All implementations must embed UnimplementedRPCServer
 // for forward compatibility
 type RPCServer interface {
 	// 创建消息通知群组信息
 	CreateTarget(context.Context, *Target) (*Target, error)
-	// 查看群组信息
+	// 查看群组详细信息
 	DescribeTarget(context.Context, *DescribeTargetRequest) (*Target, error)
+	//  查看群组信息
+	QueryTarget(context.Context, *QueryTargetRequest) (*TargetSet, error)
 	mustEmbedUnimplementedRPCServer()
 }
 
@@ -74,6 +87,9 @@ func (UnimplementedRPCServer) CreateTarget(context.Context, *Target) (*Target, e
 }
 func (UnimplementedRPCServer) DescribeTarget(context.Context, *DescribeTargetRequest) (*Target, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeTarget not implemented")
+}
+func (UnimplementedRPCServer) QueryTarget(context.Context, *QueryTargetRequest) (*TargetSet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTarget not implemented")
 }
 func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
 
@@ -124,6 +140,24 @@ func _RPC_DescribeTarget_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_QueryTarget_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTargetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).QueryTarget(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.target.RPC/QueryTarget",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).QueryTarget(ctx, req.(*QueryTargetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPC_ServiceDesc is the grpc.ServiceDesc for RPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -138,6 +172,10 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DescribeTarget",
 			Handler:    _RPC_DescribeTarget_Handler,
+		},
+		{
+			MethodName: "QueryTarget",
+			Handler:    _RPC_QueryTarget_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

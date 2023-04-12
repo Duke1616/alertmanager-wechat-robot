@@ -1,0 +1,106 @@
+syntax = "proto3";
+package robot.user;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/user";
+
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+
+service RPC {
+  // 创建用户
+  rpc CreateUser(CreateUserRequest) returns(User);
+  // 查看用户详情
+  rpc DescribeUser(DescribeUserRequest) returns(User);
+  // 查看用户信息
+  rpc QueryUser(QueryUserRequest) returns(User);
+}
+
+enum USER_TYPE {
+  // 报警通知用户，不可以登陆
+  STAFF = 0;
+  // 系统登陆用户
+  SYSTEM = 1;
+}
+
+message CreateUserRequest {
+  // id信息
+  // @gotags: bson:"name" json:"name"
+  string name = 1;
+  // 用户ID，wechat_id
+  // @gotags: bson:"wechat_id" json:"wechat_id"
+  string wechat_id = 2;
+  // target_id
+  // @gotags: bson:"target_id" json:"target_id"
+  repeated string target_id = 3;
+  // 用户类型
+  // @gotags: bson:"user_type" json:"user_type"
+  USER_TYPE user_type = 4;
+}
+
+message Profile {
+  // 电话号
+  // @gotags: bson:"phone" json:"phone"
+  int64 phone = 1;
+  // 职位
+  // @gotags: bson:"position" json:"position"
+  string position = 2;
+  // 邮箱
+  // @gotags: bson:"email" json:"email"
+  string email = 3;
+}
+
+message User {
+  // id信息
+  // @gotags: bson:"_id" json:"id"
+  string id = 1;
+  // 创建时间
+  // @gotags: bson:"create_at" json:"create_at"
+  int64 create_at = 2;
+  // 详细信息
+  // @gotags: bson:"spec" json:"spec"
+  CreateUserRequest spec = 3;
+  // 用户详细信息
+  // @gotags: bson:"profile" json:"profile"
+  Profile profile = 4;
+}
+
+message UserSet {
+  // 总数量
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // 数据
+  // @gotags: bson:"items" json:"items"
+  repeated User items = 2;
+}
+
+enum DESCRIBE_BY {
+  // 根据用户ID
+  ID = 0;
+  // 根据企业微信ID
+  WECHAT_ID = 1;
+  // 根据用户名称
+  NAME = 2;
+}
+
+message DescribeUserRequest {
+  // 查询方式
+  // @gotags: json:"describe_by"
+  DESCRIBE_BY describe_by = 1;
+  // 通过Id查询
+  // @gotags: json:"id"
+  string id = 2;
+  // 通过name查询
+  // @gotags: json:"wechat_id"
+  string wechat_id = 3;
+  // 通过name查询
+  // @gotags: json:"name"
+  string name = 4;
+}
+
+message QueryUserRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // target_id信息
+  // @gotags: json:"target_id"
+  string target_id = 2;
+}
+

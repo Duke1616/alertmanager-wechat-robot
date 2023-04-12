@@ -44,3 +44,36 @@ func (s *service) DescribeTarget(ctx context.Context, req *target.DescribeTarget
 
 	return t, nil
 }
+
+func (s *service) QueryTarget(ctx context.Context, req *target.QueryTargetRequest) (*target.TargetSet, error) {
+	query, err := newQueryTargetRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	s.log.Debugf("query target filter: %s", query.FindFilter())
+	resp, err := s.col.Find(ctx, query.FindFilter(), query.FindOptions())
+
+	if err != nil {
+		return nil, exception.NewInternalServerError("find target error, error is %s", err)
+	}
+
+	set := target.NewTargetSet()
+	// 循环插入数据
+	for resp.Next(ctx) {
+		ins := target.NewDefaultTarget()
+		if err := resp.Decode(ins); err != nil {
+			return nil, exception.NewInternalServerError("decode target error, error is %s", err)
+		}
+		set.Add(ins)
+	}
+
+	// 计算数量
+	count, err := s.col.CountDocuments(ctx, query.FindFilter())
+	if err != nil {
+		return nil, exception.NewInternalServerError("get target count error, error is %s", err)
+	}
+	set.Total = count
+
+	return set, nil
+}

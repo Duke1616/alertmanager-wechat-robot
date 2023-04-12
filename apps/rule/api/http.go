@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 
@@ -15,18 +16,18 @@ var (
 )
 
 type handler struct {
-	service target.RPCServer
+	service rule.RPCServer
 	log     logger.Logger
 }
 
 func (h *handler) Config() error {
-	h.log = zap.L().Named(target.AppName)
-	h.service = app.GetGrpcApp(target.AppName).(target.RPCServer)
+	h.log = zap.L().Named(rule.AppName)
+	h.service = app.GetGrpcApp(rule.AppName).(rule.RPCServer)
 	return nil
 }
 
 func (h *handler) Name() string {
-	return target.AppName
+	return rule.AppName
 }
 
 func (h *handler) Version() string {
@@ -34,28 +35,28 @@ func (h *handler) Version() string {
 }
 
 func (h *handler) Registry(ws *restful.WebService) {
-	tags := []string{"群组信息"}
+	tags := []string{"策略信息"}
 
-	ws.Route(ws.POST("/").To(h.CreateTarget).
-		Doc("创建消息通知群组信息").
+	ws.Route(ws.POST("/").To(h.CreateRule).
+		Doc("创建策略").
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(target.Target{}).
-		Writes(target.Target{}))
+		Reads(rule.CreateRuleRequest{}).
+		Writes(rule.Rule{}))
 
-	ws.Route(ws.GET("/{id}").To(h.DescribeTarget).
-		Doc("查询群组详细信息").
-		Param(ws.PathParameter("id", "identifier of the target").DataType("integer").DefaultValue("1")).
+	ws.Route(ws.GET("/{id}").To(h.DescribeRule).
+		Doc("查询策略详细信息").
+		Param(ws.PathParameter("id", "identifier of the rule").DataType("integer").DefaultValue("1")).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(target.Target{}).
-		Returns(200, "OK", target.Target{}).
+		Returns(200, "OK", rule.Rule{}).
 		Returns(404, "Not Found", nil))
 
-	ws.Route(ws.GET("/").To(h.QueryTarget).
-		Doc("查询消息群组信息").
+	ws.Route(ws.GET("/").To(h.QueryRule).
+		Doc("查询策略").
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(target.QueryTargetRequest{}).
-		Writes(target.TargetSet{}).
-		Returns(200, "OK", target.TargetSet{}).
+		Reads(rule.QueryRuleRequest{}).
+		Writes(rule.RuleSet{}).
+		Returns(200, "OK", rule.RuleSet{}).
 		Returns(404, "Not Found", nil))
 }
 
