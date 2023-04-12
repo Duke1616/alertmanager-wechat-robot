@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notifier"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/golang/protobuf/jsonpb"
@@ -27,8 +26,6 @@ func (h *handler) SendWechatRobot(r *restful.Request, w *restful.Response) {
 		//response.Failed(w, err)
 		h.log.Error(err)
 	}
-
-	fmt.Println(req.Notification.Alerts)
 
 	//if err := r.ReadEntity(req.Notification); err != nil {
 	//	response.Failed(w, err)

@@ -10,8 +10,18 @@ service RPC {
 }
 
 enum ACTIVE {
-  DROP = 0;
-  STATUS_TRANS = 1;
+  NEWS = 0;
+  // 状态转换
+  STATUS_TRANS = 2;
+  // 丢弃报警
+  DROP = 1;
+}
+
+enum LABEL_TYPE {
+  // 组策略标签匹配
+  GROUP = 0;
+  // 全局配置标签匹配
+  COMMON = 1;
 }
 
 message Target {
@@ -39,18 +49,21 @@ message Rule {
   // 是否开启
   // @gotags: bson:"enabled" json:"enabled"
   bool enabled = 1;
+  // 标签类型
+  // @gotags: bson:"label_type" json:"label_type"
+  LABEL_TYPE label_type = 2;
   // 匹配标签
   // @gotags: bson:"label" json:"label"
-  string label = 2;
+  string label = 3;
   // 匹配值
   // @gotags: bson:"value" json:"value"
-  repeated string value = 3;
+  repeated string value = 4;
   // 动作
   // @gotags: bson:"active" json:"active"
-  ACTIVE active = 4;
+  ACTIVE active = 5;
   // @其他人
   // @gotags: bson:"mention" json:"mention"
-  Mention mention = 5;
+  Mention mention = 6;
 }
 
 // 提到的人

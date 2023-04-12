@@ -26,7 +26,7 @@ type RPCClient interface {
 	// 接收报警信息，进行转换
 	SendWechatRobot(ctx context.Context, in *NotificationInfo, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 发送报警信息到企业微信 Robot
-	TransFormToWechat(ctx context.Context, in *NotificationInfo, opts ...grpc.CallOption) (*Message, error)
+	TransFormToWechat(ctx context.Context, in *NotificationWechat, opts ...grpc.CallOption) (*Message, error)
 }
 
 type rPCClient struct {
@@ -46,7 +46,7 @@ func (c *rPCClient) SendWechatRobot(ctx context.Context, in *NotificationInfo, o
 	return out, nil
 }
 
-func (c *rPCClient) TransFormToWechat(ctx context.Context, in *NotificationInfo, opts ...grpc.CallOption) (*Message, error) {
+func (c *rPCClient) TransFormToWechat(ctx context.Context, in *NotificationWechat, opts ...grpc.CallOption) (*Message, error) {
 	out := new(Message)
 	err := c.cc.Invoke(ctx, "/robot.notifier.RPC/TransFormToWechat", in, out, opts...)
 	if err != nil {
@@ -62,7 +62,7 @@ type RPCServer interface {
 	// 接收报警信息，进行转换
 	SendWechatRobot(context.Context, *NotificationInfo) (*emptypb.Empty, error)
 	// 发送报警信息到企业微信 Robot
-	TransFormToWechat(context.Context, *NotificationInfo) (*Message, error)
+	TransFormToWechat(context.Context, *NotificationWechat) (*Message, error)
 	mustEmbedUnimplementedRPCServer()
 }
 
@@ -73,7 +73,7 @@ type UnimplementedRPCServer struct {
 func (UnimplementedRPCServer) SendWechatRobot(context.Context, *NotificationInfo) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendWechatRobot not implemented")
 }
-func (UnimplementedRPCServer) TransFormToWechat(context.Context, *NotificationInfo) (*Message, error) {
+func (UnimplementedRPCServer) TransFormToWechat(context.Context, *NotificationWechat) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TransFormToWechat not implemented")
 }
 func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
@@ -108,7 +108,7 @@ func _RPC_SendWechatRobot_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _RPC_TransFormToWechat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NotificationInfo)
+	in := new(NotificationWechat)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -120,7 +120,7 @@ func _RPC_TransFormToWechat_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/robot.notifier.RPC/TransFormToWechat",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCServer).TransFormToWechat(ctx, req.(*NotificationInfo))
+		return srv.(RPCServer).TransFormToWechat(ctx, req.(*NotificationWechat))
 	}
 	return interceptor(ctx, in, info, handler)
 }

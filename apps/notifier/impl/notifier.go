@@ -17,35 +17,36 @@ func (s *service) SendWechatRobot(ctx context.Context, req *notifier.Notificatio
 		return nil, err
 	}
 
-	for _, v := range t.Rule {
-		value, ok := req.Notification.CommonLabels[v.Label]
-		if ok {
-			fmt.Println(value)
-		}
+	notifierWechat := notifier.NewNotifierWechat(req.Notification)
+
+	// 规则的判断，是否报警预处理
+	err = notifierWechat.HasRule(t)
+	if err != nil {
+		return nil, err
 	}
 
-	//md, err := s.TransFormToWechat(ctx, req)
-	//if err != nil {
-	//	return nil, nil
-	//}
-	//
-	//wechatUrl := fmt.Sprintf("%s%s", t.Url, t.Secret)
+	md, err := s.TransFormToWechat(ctx, notifierWechat)
+	if err != nil {
+		return nil, nil
+	}
 
-	//err = send(wechatUrl, md)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//if req.Notification.CommonAnnotations[t.Rule]
-	//fmt.Println(req.Notification.CommonLabels)
+	wechatUrl := fmt.Sprintf("%s%s", t.Url, t.Secret)
+
+	err = s.send(wechatUrl, md)
+	if err != nil {
+		return nil, err
+	}
+
 	return nil, nil
 }
 
-func (s *service) TransFormToWechat(ctx context.Context, req *notifier.NotificationInfo) (*notifier.Message, error) {
+func (s *service) TransFormToWechat(ctx context.Context, req *notifier.NotificationWechat) (*notifier.Message, error) {
 	status := req.Notification.Status
 
 	var buffer bytes.Buffer
-
-	buffer.WriteString(fmt.Sprintf("### 当前状态:%s, 数量: %d \n", status, len(req.Notification.Alerts)))
+	for _, value := range req.Mention.Mobiles {
+		buffer.WriteString(fmt.Sprintf("### 当前状态:%s, 数量: %d @%s \n", status, len(req.Notification.Alerts), value))
+	}
 
 	for _, alert := range req.Notification.Alerts {
 		labels := alert.Labels
@@ -55,7 +56,7 @@ func (s *service) TransFormToWechat(ctx context.Context, req *notifier.Notificat
 		annotations := alert.Annotations
 		buffer.WriteString(fmt.Sprintf("\n>告警主题: %s", annotations["summary"]))
 		buffer.WriteString(fmt.Sprintf("\n>告警详情: %s", annotations["description"]))
-		buffer.WriteString(fmt.Sprintf("\n>告警时间: %s", alert.StartsAt.AsTime().Format("2006-01-02 15:04:05")))
+		buffer.WriteString(fmt.Sprintf("\n>告警时间: %s\n", alert.StartsAt.AsTime().Format("2006-01-02 15:04:05")))
 		buffer.WriteString(fmt.Sprint("\n=============华丽的分割线条=============="))
 	}
 
@@ -69,7 +70,7 @@ func (s *service) TransFormToWechat(ctx context.Context, req *notifier.Notificat
 	return markdown, nil
 }
 
-func send(wechatUrl string, md *notifier.Message) error {
+func (s *service) send(wechatUrl string, md *notifier.Message) error {
 	fmt.Println(md)
 
 	data, err := json.Marshal(md)
@@ -91,8 +92,8 @@ func send(wechatUrl string, md *notifier.Message) error {
 	}
 
 	defer resp.Body.Close()
-	fmt.Println("response Status", resp.Status)
-	fmt.Println("response Status", resp.Header)
+	s.log.Info(resp.Status)
+	s.log.Info(resp.Header)
 
 	return nil
 }

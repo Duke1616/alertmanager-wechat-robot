@@ -54,6 +54,51 @@ func (t *ACTIVE) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// ParseLABEL_TYPEFromString Parse LABEL_TYPE from string
+func ParseLABEL_TYPEFromString(str string) (LABEL_TYPE, error) {
+	key := strings.Trim(string(str), `"`)
+	v, ok := LABEL_TYPE_value[strings.ToUpper(key)]
+	if !ok {
+		return 0, fmt.Errorf("unknown LABEL_TYPE: %s", str)
+	}
+
+	return LABEL_TYPE(v), nil
+}
+
+// Equal type compare
+func (t LABEL_TYPE) Equal(target LABEL_TYPE) bool {
+	return t == target
+}
+
+// IsIn todo
+func (t LABEL_TYPE) IsIn(targets ...LABEL_TYPE) bool {
+	for _, target := range targets {
+		if t.Equal(target) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// MarshalJSON todo
+func (t LABEL_TYPE) MarshalJSON() ([]byte, error) {
+	b := bytes.NewBufferString(`"`)
+	b.WriteString(strings.ToUpper(t.String()))
+	b.WriteString(`"`)
+	return b.Bytes(), nil
+}
+
+// UnmarshalJSON todo
+func (t *LABEL_TYPE) UnmarshalJSON(b []byte) error {
+	ins, err := ParseLABEL_TYPEFromString(string(b))
+	if err != nil {
+		return err
+	}
+	*t = ins
+	return nil
+}
+
 // ParseDESCRIBE_BYFromString Parse DESCRIBE_BY from string
 func ParseDESCRIBE_BYFromString(str string) (DESCRIBE_BY, error) {
 	key := strings.Trim(string(str), `"`)

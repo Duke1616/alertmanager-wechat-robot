@@ -4,20 +4,21 @@ option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/notifier
 
 import public "google/protobuf/timestamp.proto";
 import public "google/protobuf/Empty.proto";
+import "apps/target/pb/target.proto";
 
 service RPC {
   // 接收报警信息，进行转换
   rpc SendWechatRobot(NotificationInfo) returns(google.protobuf.Empty);
   // 发送报警信息到企业微信 Robot
-  rpc TransFormToWechat(NotificationInfo) returns(Message);
+  rpc TransFormToWechat(NotificationWechat) returns(Message);
 }
 
 message NotificationInfo {
   // 发送target名称
-  // @gotags: bson:"version" json:"version"
+  // @gotags: bson:"name" json:"name"
   string name = 1;
   // 报警详细信息
-  // @gotags: bson:"version" json:"version"
+  // @gotags: bson:"notification" json:"notification"
   Notification notification = 2;
 }
 
@@ -67,6 +68,15 @@ message Notification {
   // 警报信息
   // @gotags: bson:"alerts" json:"alerts"
   repeated Alert alerts = 7;
+}
+
+message NotificationWechat {
+  // 报警详细信息
+  // @gotags: bson:"mention" json:"mention"
+  target.Mention mention = 1;
+  // 报警详细信息
+  // @gotags: bson:"notification" json:"notification"
+  Notification notification = 2;
 }
 
 message Message {
