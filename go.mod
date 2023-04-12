@@ -14,6 +14,7 @@ require (
 	github.com/rs/xid v1.3.0
 	github.com/spf13/cobra v1.7.0
 	go.mongodb.org/mongo-driver v1.11.4
+	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d
 	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.28.1
 )
@@ -45,7 +46,6 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.20.0 // indirect
-	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.6.0 // indirect

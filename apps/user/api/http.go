@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 
@@ -27,7 +26,7 @@ func (h *handler) Config() error {
 }
 
 func (h *handler) Name() string {
-	return target.AppName
+	return user.AppName
 }
 
 func (h *handler) Version() string {

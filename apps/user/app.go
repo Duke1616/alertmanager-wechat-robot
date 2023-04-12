@@ -2,9 +2,12 @@ package user
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/infraboard/mcube/exception"
 	"github.com/infraboard/mcube/http/request"
 	"github.com/rs/xid"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -29,9 +32,14 @@ func NewUser(req *CreateUserRequest) (*User, error) {
 		Id:       xid.New().String(),
 		CreateAt: time.Now().UnixMilli(),
 		Spec:     req,
+		UserType: USER_TYPE_STAFF,
 	}
 
 	return t, nil
+}
+
+func NewDefaultUser() *User {
+	return &User{}
 }
 
 // NewDescribeUserRequestById 查询详情请求
@@ -56,7 +64,16 @@ func NewQueryUserRequestFromHTTP(r *http.Request) *QueryUserRequest {
 	qs := r.URL.Query()
 	req := NewDefaultQueryTargetRequest()
 
-	req.TargetId = qs.Get("target_id")
+	//req.TargetId = qs.Get("target_id")
+
+	ids := qs.Get("target_id")
+	if ids != "" {
+		index := strings.Index(ids, ",")
+		if index == -1 {
+			ids += ","
+		}
+		req.TargetIds = strings.Split(ids, ",")
+	}
 
 	req.Page = page
 	return req
@@ -70,4 +87,44 @@ func NewDefaultQueryTargetRequest() *QueryUserRequest {
 
 func (req *QueryUserRequest) Validate() error {
 	return validate.Struct(req)
+}
+
+func (req *DescribeUserRequest) Validate() error {
+	return validate.Struct(req)
+}
+
+func NewUserSet() *UserSet {
+	return &UserSet{
+		Items: []*User{},
+	}
+}
+
+func (s *UserSet) Add(item *User) {
+	s.Total++
+	s.Items = append(s.Items, item)
+}
+
+func NewHashedPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
+}
+
+func CheckPassword(password, haPass string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(haPass), []byte(password))
+	if err != nil {
+		return exception.NewUnauthorized("user or password not connrect")
+	}
+
+	return nil
+}
+
+func NewValidate(user, password string) *ValidateRequest {
+	return &ValidateRequest{
+		Name:     user,
+		Password: password,
+	}
 }

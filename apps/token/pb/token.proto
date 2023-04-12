@@ -1,3 +1,70 @@
 syntax = "proto3";
 package robot.token;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/token";
+
+
+import "apps/user/pb/user.proto";
+
+// Token服务
+service RPC {
+  // 颁发Token
+  rpc IssueToken(IssueTokenRequest) returns (Token);
+  // 校验Token
+  rpc ValidateToken(ValidateTokenRequest) returns (Token);
+  // 删除Token
+  rpc RemoveToken(RemoveTokenRequest) returns (Token);
+}
+
+// 令牌类型
+enum PLATFORM {
+  // Web 登陆授权
+  WEB = 0;
+  // TODO 接收报警数据需要
+  API = 1;
+}
+
+message Token {
+  // 颁发平台, 根据授权方式判断
+  // @gotags: bson:"platform" json:"platform"
+  PLATFORM platform = 1;
+  // 访问令牌
+  // @gotags: bson:"_id" json:"access_token"
+  string access_token = 2;
+  // 颁发时间
+  // @gotags: bson:"issue_at" json:"issue_at"
+  int64 issue_at = 3;
+  // 访问令牌过期时间
+  // @gotags: bson:"access_expired_at" json:"access_expired_at"
+  int64 access_expired_at = 4;
+  // 用户类型
+  // @gotags: bson:"user_type" json:"user_type"
+  user.USER_TYPE user_type = 5;
+  // 用户名
+  // @gotags: bson:"username" json:"username"
+  string username = 6;
+  // 用户Id
+  // @gotags: bson:"user_id" json:"user_id"
+  string user_id = 7;
+}
+
+message IssueTokenRequest {
+  // PASSWORD授权时, 用户名
+  // @gotags: json:"username,omitempty"
+  string username = 1;
+  // PASSWORD授权时, 用户密码
+  // @gotags: json:"password,omitempty"
+  string password = 2;
+}
+
+
+message ValidateTokenRequest {
+  // 令牌
+  // @gotags: json:"access_token"
+  string access_token = 1;
+}
+
+message RemoveTokenRequest {
+  // 令牌
+  // @gotags: json:"access_token"
+  string access_token = 1;
+}

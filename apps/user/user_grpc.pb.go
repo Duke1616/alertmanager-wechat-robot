@@ -27,7 +27,9 @@ type RPCClient interface {
 	// 查看用户详情
 	DescribeUser(ctx context.Context, in *DescribeUserRequest, opts ...grpc.CallOption) (*User, error)
 	// 查看用户信息
-	QueryUser(ctx context.Context, in *QueryUserRequest, opts ...grpc.CallOption) (*User, error)
+	QueryUser(ctx context.Context, in *QueryUserRequest, opts ...grpc.CallOption) (*UserSet, error)
+	// 用户登陆验证
+	ValidateUser(ctx context.Context, in *ValidateRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type rPCClient struct {
@@ -56,9 +58,18 @@ func (c *rPCClient) DescribeUser(ctx context.Context, in *DescribeUserRequest, o
 	return out, nil
 }
 
-func (c *rPCClient) QueryUser(ctx context.Context, in *QueryUserRequest, opts ...grpc.CallOption) (*User, error) {
-	out := new(User)
+func (c *rPCClient) QueryUser(ctx context.Context, in *QueryUserRequest, opts ...grpc.CallOption) (*UserSet, error) {
+	out := new(UserSet)
 	err := c.cc.Invoke(ctx, "/robot.user.RPC/QueryUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) ValidateUser(ctx context.Context, in *ValidateRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/robot.user.RPC/ValidateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +85,9 @@ type RPCServer interface {
 	// 查看用户详情
 	DescribeUser(context.Context, *DescribeUserRequest) (*User, error)
 	// 查看用户信息
-	QueryUser(context.Context, *QueryUserRequest) (*User, error)
+	QueryUser(context.Context, *QueryUserRequest) (*UserSet, error)
+	// 用户登陆验证
+	ValidateUser(context.Context, *ValidateRequest) (*User, error)
 	mustEmbedUnimplementedRPCServer()
 }
 
@@ -88,8 +101,11 @@ func (UnimplementedRPCServer) CreateUser(context.Context, *CreateUserRequest) (*
 func (UnimplementedRPCServer) DescribeUser(context.Context, *DescribeUserRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeUser not implemented")
 }
-func (UnimplementedRPCServer) QueryUser(context.Context, *QueryUserRequest) (*User, error) {
+func (UnimplementedRPCServer) QueryUser(context.Context, *QueryUserRequest) (*UserSet, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryUser not implemented")
+}
+func (UnimplementedRPCServer) ValidateUser(context.Context, *ValidateRequest) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateUser not implemented")
 }
 func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
 
@@ -158,6 +174,24 @@ func _RPC_QueryUser_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_ValidateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).ValidateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.user.RPC/ValidateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).ValidateUser(ctx, req.(*ValidateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPC_ServiceDesc is the grpc.ServiceDesc for RPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +210,10 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryUser",
 			Handler:    _RPC_QueryUser_Handler,
+		},
+		{
+			MethodName: "ValidateUser",
+			Handler:    _RPC_ValidateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
