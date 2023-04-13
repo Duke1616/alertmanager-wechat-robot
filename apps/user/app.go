@@ -32,7 +32,6 @@ func NewUser(req *CreateUserRequest) (*User, error) {
 		Id:       xid.New().String(),
 		CreateAt: time.Now().UnixMilli(),
 		Spec:     req,
-		UserType: USER_TYPE_STAFF,
 	}
 
 	return t, nil

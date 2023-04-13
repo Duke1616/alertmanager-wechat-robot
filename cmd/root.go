@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"github.com/Duke1616/alertmanager-wechat-robot/cmd/initial"
 
 	"github.com/Duke1616/alertmanager-wechat-robot/cmd/start"
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
@@ -112,6 +113,7 @@ func Execute() {
 	// 初始化设置
 	cobra.OnInitialize(initAll)
 	RootCmd.AddCommand(start.Cmd)
+	RootCmd.AddCommand(initial.Cmd)
 	err := RootCmd.Execute()
 	cobra.CheckErr(err)
 }

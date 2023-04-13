@@ -10,6 +10,7 @@ import (
 
 func (s *service) CreateUser(ctx context.Context, req *user.CreateUserRequest) (*user.User, error) {
 	u, err := user.NewUser(req)
+
 	if err != nil {
 		return nil, exception.NewBadRequest(err.Error())
 	}
@@ -99,7 +100,7 @@ func (s *service) ValidateUser(ctx context.Context, req *user.ValidateRequest) (
 	}
 
 	// 判断用户类型是否可以正常登陆
-	if u.UserType != user.USER_TYPE_SYSTEM {
+	if u.Spec.UserType != user.USER_TYPE_SYSTEM {
 		s.log.Errorf("Account type refused login")
 		return nil, exception.NewUnauthorized("Account type refused login")
 	}

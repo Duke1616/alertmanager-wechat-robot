@@ -30,11 +30,14 @@ message CreateUserRequest {
   // @gotags: bson:"password" json:"password" validate:"required,lte=80"
   string password = 2;
   // 用户ID，wechat_id
-  // @gotags: bson:"wechat_id" json:"wechat_id" validate:"required,lte=80"
+  // @gotags: bson:"wechat_id" json:"wechat_id"
   string wechat_id = 3;
   // target_id
   // @gotags: bson:"target_ids" json:"target_ids"
   repeated string target_ids = 4;
+  // 用户类型
+  // @gotags: bson:"user_type" json:"user_type"
+  USER_TYPE user_type = 5;
 }
 
 message Profile {
@@ -62,9 +65,6 @@ message User {
   // 用户详细信息
   // @gotags: bson:"profile" json:"profile"
   Profile profile = 4;
-  // 用户类型
-  // @gotags: bson:"user_type" json:"user_type"
-  USER_TYPE user_type = 5;
 }
 
 message UserSet {

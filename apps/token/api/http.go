@@ -40,7 +40,7 @@ func (h *handler) Registry(ws *restful.WebService) {
 	ws.Route(ws.POST("/issue").To(h.IssueToken).
 		Doc("创建token").
 		Metadata(label.Resource, token.AppName).
-		Metadata(label.Auth, true).
+		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(token.IssueTokenRequest{}).
 		Writes(token.Token{}))
