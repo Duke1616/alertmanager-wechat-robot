@@ -39,7 +39,7 @@ func (s *service) SendWechatRobot(ctx context.Context, req *notifier.Notificatio
 	}
 
 	// 发送消息通知
-	wechatUrl := fmt.Sprintf("%s%s%s", t.Url, "/cgi-bin/webhook/send?key=", t.Secret)
+	wechatUrl := fmt.Sprintf("%s%s%s", t.Spec.Url, "/cgi-bin/webhook/send?key=", t.Spec.Secret)
 	err = s.send(wechatUrl, md)
 	if err != nil {
 		return nil, err

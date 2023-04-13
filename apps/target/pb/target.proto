@@ -3,36 +3,52 @@ package robot.target;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/target";
 
 import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+import "common/pb/github.com/infraboard/mcube/pb/request/request.proto";
+
 
 service RPC {
   // 创建消息通知群组信息
-  rpc CreateTarget(Target) returns(Target);
+  rpc CreateTarget(CreateTargetRequest) returns(Target);
   // 查看群组详细信息
   rpc DescribeTarget(DescribeTargetRequest) returns(Target);
-//  查看群组信息
+  // 查看群组信息
   rpc QueryTarget(QueryTargetRequest) returns(TargetSet);
+  // 删除群组
+  rpc DeleteTarget(DeleteTargetRequest) returns(TargetSet);
+  // 更新群组
+  rpc UpdateTarget(UpdateTargetRequest) returns(Target);
 }
 
 message Target {
   // id信息
   // @gotags: bson:"_id" json:"id"
   string id = 1;
-  // 群组名称
-  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
-  string name = 2;
   // 创建时间
   // @gotags: bson:"create_at" json:"create_at"
-  int64 create_at = 3;
+  int64 create_at = 2;
+  // 创建时间
+  // @gotags: bson:"update_at" json:"update_at"
+  int64 update_at = 3;
+  // 详细信息
+  // @gotags: bson:"spec" json:"spec"
+  CreateTargetRequest spec = 4;
+}
+
+message CreateTargetRequest {
+  // 群组名称
+  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  string name = 1;
   // wechat url
   // @gotags: bson:"url" json:"url" validate:"required,lte=64"
-  string url = 4;
+  string url = 2;
   // robot 密钥信息
   // @gotags: bson:"secret" json:"secret" validate:"required,lte=64"
-  string secret = 5;
+  string secret = 3;
   // 描述信息
   // @gotags: bson:"description" json:"description"
-  string description = 6;
+  string description = 4;
 }
+
 
 message TargetSet {
   // 总数量
@@ -69,7 +85,34 @@ message QueryTargetRequest {
   // url信息
   // @gotags: json:"url"
   string url = 2;
-  // secret信息
-  // @gotags: json:"secret"
-  string secret = 3;
+  // target_ids
+  // @gotags: json:"target_ids"
+  repeated string target_ids = 3;
+}
+
+message UpdateTargetRequest {
+  // 更新模式
+  // @gotags: json:"update_mode"
+  infraboard.mcube.request.UpdateMode update_mode = 1;
+  // 群组id
+  // @gotags: json:"target_id" validate:"required,lte=64"
+  string target_id = 2;
+  // 群组名称
+  // @gotags: json:"name" validate:"required,lte=64"
+  string name = 3;
+  // wechat url
+  // @gotags: json:"url" validate:"required,lte=64"
+  string url = 4;
+  // robot 密钥信息
+  // @gotags: json:"secret" validate:"required,lte=64"
+  string secret = 5;
+  // 描述信息
+  // @gotags: json:"description"
+  string description = 6;
+}
+
+message DeleteTargetRequest {
+  // 用户账号id
+  // @gotags: json:"target_ids" validate:"required,lte=60"
+  repeated string target_ids = 2;
 }

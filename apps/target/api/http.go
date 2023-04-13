@@ -35,21 +35,21 @@ func (h *handler) Version() string {
 }
 
 func (h *handler) Registry(ws *restful.WebService) {
-	tags := []string{"群组信息"}
+	tags := []string{"群组模块"}
 
 	ws.Route(ws.POST("/").To(h.CreateTarget).
 		Doc("创建消息通知群组信息").
 		Metadata(label.Resource, target.AppName).
 		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(target.Target{}).
+		Reads(target.CreateTargetRequest{}).
 		Writes(target.Target{}))
 
 	ws.Route(ws.GET("/{id}").To(h.DescribeTarget).
 		Doc("查询群组详细信息").
 		Metadata(label.Resource, target.AppName).
 		Metadata(label.Auth, true).
-		Param(ws.PathParameter("id", "identifier of the target").DataType("integer").DefaultValue("1")).
+		Param(ws.PathParameter("id", "target id").DataType("integer").DefaultValue("1")).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(target.Target{}).
 		Returns(200, "OK", target.Target{}).
@@ -60,10 +60,28 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Metadata(label.Resource, target.AppName).
 		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(target.QueryTargetRequest{}).
+		Param(ws.QueryParameter("page_size", "每一页的数据条数").DataType("uint64")).
+		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
+		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
+		Param(ws.QueryParameter("url", "webhook地址").DataType("string")).
 		Writes(target.TargetSet{}).
 		Returns(200, "OK", target.TargetSet{}).
 		Returns(404, "Not Found", nil))
+
+	ws.Route(ws.PUT("/{id}").To(h.PutTarget).
+		Doc("修改群组信息").
+		Metadata(label.Resource, target.AppName).
+		Metadata(label.Auth, true).
+		Param(ws.PathParameter("id", "target id").DataType("string")).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Reads(target.UpdateTargetRequest{}))
+
+	ws.Route(ws.DELETE("/{id}").To(h.DeleteTarget).
+		Doc("删除群组信息").
+		Metadata(label.Resource, target.AppName).
+		Metadata(label.Auth, true).
+		Param(ws.PathParameter("id", "target id").DataType("string")).
+		Metadata(restfulspec.KeyOpenAPITags, tags))
 }
 
 func init() {

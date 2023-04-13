@@ -4,13 +4,13 @@ import (
 	"context"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	"github.com/infraboard/mcube/exception"
+	"github.com/infraboard/mcube/pb/request"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *service) CreateUser(ctx context.Context, req *user.CreateUserRequest) (*user.User, error) {
 	u, err := user.NewUser(req)
-
 	if err != nil {
 		return nil, exception.NewBadRequest(err.Error())
 	}
@@ -112,4 +112,52 @@ func (s *service) ValidateUser(ctx context.Context, req *user.ValidateRequest) (
 	}
 
 	return u, nil
+}
+
+func (s *service) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) (*user.User, error) {
+	ins, err := s.DescribeUser(ctx, user.NewDescribeUserRequestById(req.UserId))
+	if err != nil {
+		return nil, err
+	}
+
+	switch req.UpdateMode {
+	case request.UpdateMode_PUT:
+		ins.Update(req)
+	case request.UpdateMode_PATCH:
+		err = ins.Patch(req)
+		if err != nil {
+			return nil, exception.NewBadRequest("patch error, %s", err)
+		}
+	}
+
+	if err := s.update(ctx, ins); err != nil {
+		return nil, err
+	}
+
+	return ins, nil
+}
+
+func (s *service) DeleteUser(ctx context.Context, req *user.DeleteUserRequest) (*user.UserSet, error) {
+	// 判断这些要删除的用户是否存在
+	queryReq := user.NewDefaultQueryTargetRequest()
+	queryReq.UserIds = req.UserIds
+	set, err := s.QueryUser(ctx, queryReq)
+	if err != nil {
+		return nil, err
+	}
+
+	var noExist []string
+	for _, uid := range req.UserIds {
+		if !set.HasUser(uid) {
+			noExist = append(noExist, uid)
+		}
+	}
+	if len(noExist) > 0 {
+		return nil, exception.NewBadRequest("user %v not found", req.UserIds)
+	}
+
+	if err = s.delete(ctx, set); err != nil {
+		return nil, err
+	}
+	return set, nil
 }

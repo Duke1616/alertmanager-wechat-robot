@@ -30,6 +30,10 @@ type RPCClient interface {
 	QueryUser(ctx context.Context, in *QueryUserRequest, opts ...grpc.CallOption) (*UserSet, error)
 	// 用户登陆验证
 	ValidateUser(ctx context.Context, in *ValidateRequest, opts ...grpc.CallOption) (*User, error)
+	// 删除用户
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*UserSet, error)
+	// 更新用户
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type rPCClient struct {
@@ -76,6 +80,24 @@ func (c *rPCClient) ValidateUser(ctx context.Context, in *ValidateRequest, opts 
 	return out, nil
 }
 
+func (c *rPCClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*UserSet, error) {
+	out := new(UserSet)
+	err := c.cc.Invoke(ctx, "/robot.user.RPC/DeleteUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/robot.user.RPC/UpdateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCServer is the server API for RPC service.
 // All implementations must embed UnimplementedRPCServer
 // for forward compatibility
@@ -88,6 +110,10 @@ type RPCServer interface {
 	QueryUser(context.Context, *QueryUserRequest) (*UserSet, error)
 	// 用户登陆验证
 	ValidateUser(context.Context, *ValidateRequest) (*User, error)
+	// 删除用户
+	DeleteUser(context.Context, *DeleteUserRequest) (*UserSet, error)
+	// 更新用户
+	UpdateUser(context.Context, *UpdateUserRequest) (*User, error)
 	mustEmbedUnimplementedRPCServer()
 }
 
@@ -106,6 +132,12 @@ func (UnimplementedRPCServer) QueryUser(context.Context, *QueryUserRequest) (*Us
 }
 func (UnimplementedRPCServer) ValidateUser(context.Context, *ValidateRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidateUser not implemented")
+}
+func (UnimplementedRPCServer) DeleteUser(context.Context, *DeleteUserRequest) (*UserSet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
+}
+func (UnimplementedRPCServer) UpdateUser(context.Context, *UpdateUserRequest) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
 
@@ -192,6 +224,42 @@ func _RPC_ValidateUser_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.user.RPC/DeleteUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPC_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.user.RPC/UpdateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPC_ServiceDesc is the grpc.ServiceDesc for RPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -214,6 +282,14 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidateUser",
 			Handler:    _RPC_ValidateUser_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _RPC_DeleteUser_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _RPC_UpdateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

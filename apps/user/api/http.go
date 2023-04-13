@@ -35,23 +35,22 @@ func (h *handler) Version() string {
 }
 
 func (h *handler) Registry(ws *restful.WebService) {
-	tags := []string{"用户信息"}
+	tags := []string{"用户模块"}
 
 	ws.Route(ws.POST("/").To(h.CreateUser).
 		Doc("创建用户").
 		Metadata(label.Resource, user.AppName).
-		Metadata(label.Auth, true).
+		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(user.User{}).
+		Reads(user.CreateUserRequest{}).
 		Writes(user.User{}))
 
 	ws.Route(ws.GET("/{id}").To(h.DescribeUser).
 		Doc("查询用户详情信息").
 		Metadata(label.Resource, user.AppName).
 		Metadata(label.Auth, true).
-		Param(ws.PathParameter("id", "identifier of the user").DataType("integer").DefaultValue("1")).
+		Param(ws.PathParameter("id", "用户id").DataType("integer").DefaultValue("1")).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(user.DescribeUserRequest{}).
 		Writes(user.User{}).
 		Returns(200, "OK", user.User{}).
 		Returns(404, "Not Found", nil))
@@ -59,12 +58,38 @@ func (h *handler) Registry(ws *restful.WebService) {
 	ws.Route(ws.GET("/").To(h.QueryUser).
 		Doc("查询条件匹配用户信息").
 		Metadata(label.Resource, user.AppName).
-		Metadata(label.Auth, true).
+		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(user.QueryUserRequest{}).
+		Param(ws.QueryParameter("page_size", "每一页的数据条数").DataType("uint64")).
+		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
+		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
+		Param(ws.QueryParameter("target_ids", "查询target_id的用户，以逗号分割传递").DataType("string")).
 		Writes(user.UserSet{}).
 		Returns(200, "OK", user.UserSet{}).
 		Returns(404, "Not Found", nil))
+
+	ws.Route(ws.PUT("/{id}").To(h.PutUser).
+		Doc("修改用户信息").
+		Metadata(label.Resource, user.AppName).
+		Metadata(label.Auth, true).
+		Param(ws.PathParameter("id", "用户id").DataType("string")).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Reads(user.UpdateUserRequest{}))
+
+	//ws.Route(ws.PATCH("/{id}").To(h.PatchUser).
+	//	Doc("修改用户信息").
+	//	Metadata(label.Resource, user.AppName).
+	//	Metadata(label.Auth, true).
+	//	Param(ws.PathParameter("id", "用户id").DataType("string")).
+	//	Metadata(restfulspec.KeyOpenAPITags, tags).
+	//	Reads(user.UpdateUserRequest{}))
+
+	ws.Route(ws.DELETE("/{id}").To(h.DeleteUser).
+		Doc("删除用户").
+		Metadata(label.Resource, user.AppName).
+		Metadata(label.Auth, false).
+		Param(ws.PathParameter("id", "用户id").DataType("string")).
+		Metadata(restfulspec.KeyOpenAPITags, tags))
 }
 
 func init() {

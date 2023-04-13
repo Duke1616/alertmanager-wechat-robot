@@ -35,7 +35,7 @@ func (h *handler) Version() string {
 }
 
 func (h *handler) Registry(ws *restful.WebService) {
-	tags := []string{"用户信息"}
+	tags := []string{"token模块"}
 
 	ws.Route(ws.POST("/issue").To(h.IssueToken).
 		Doc("创建token").
@@ -50,7 +50,7 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Metadata(label.Resource, token.AppName).
 		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
-		Reads(token.ValidateTokenRequest{}).
+		Param(ws.QueryParameter("access_token", "token信息").DataType("string")).
 		Writes(token.Token{}).
 		Returns(200, "OK", token.Token{}).
 		Returns(404, "Not Found", nil))

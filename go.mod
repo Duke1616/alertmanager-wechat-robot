@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/spec v0.20.4
 	github.com/go-playground/validator/v10 v10.10.0
 	github.com/golang/protobuf v1.5.2
+	github.com/imdario/mergo v0.3.15
 	github.com/infraboard/mcube v1.9.11
 	github.com/rs/xid v1.3.0
 	github.com/spf13/cobra v1.7.0

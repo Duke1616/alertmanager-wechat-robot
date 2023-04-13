@@ -3,6 +3,7 @@ package robot.user;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/user";
 
 import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+import "common/pb/github.com/infraboard/mcube/pb/request/request.proto";
 
 service RPC {
   // 创建用户
@@ -13,6 +14,10 @@ service RPC {
   rpc QueryUser(QueryUserRequest) returns(UserSet);
   // 用户登陆验证
   rpc ValidateUser(ValidateRequest) returns(User);
+  // 删除用户
+  rpc DeleteUser(DeleteUserRequest) returns(UserSet);
+  // 更新用户
+  rpc UpdateUser(UpdateUserRequest) returns(User);
 }
 
 enum USER_TYPE {
@@ -24,10 +29,10 @@ enum USER_TYPE {
 
 message CreateUserRequest {
   // id信息
-  // @gotags: bson:"name" json:"name" validate:"required,lte=80"
+  // @gotags: bson:"name" json:"name" validate:"required,lte=80" description:"用户名"
   string name = 1;
   // id信息
-  // @gotags: bson:"password" json:"password" validate:"required,lte=80"
+  // @gotags: bson:"password" json:"password" validate:"required,lte=80 "
   string password = 2;
   // 用户ID，wechat_id
   // @gotags: bson:"wechat_id" json:"wechat_id"
@@ -59,12 +64,15 @@ message User {
   // 创建时间
   // @gotags: bson:"create_at" json:"create_at"
   int64 create_at = 2;
+  // 创建时间
+  // @gotags: bson:"update_at" json:"update_at"
+  int64 update_at = 3;
   // 详细信息
   // @gotags: bson:"spec" json:"spec"
-  CreateUserRequest spec = 3;
+  CreateUserRequest spec = 4;
   // 用户详细信息
   // @gotags: bson:"profile" json:"profile"
-  Profile profile = 4;
+  Profile profile = 5;
 }
 
 message UserSet {
@@ -104,11 +112,13 @@ message QueryUserRequest {
   // 分页参数
   // @gotags: json:"page"
   infraboard.mcube.page.PageRequest page = 1;
+  // user_ids信息
+  // @gotags: json:"user_ids"
+  repeated string user_ids = 2;
   // target_id信息
   // @gotags: json:"target_ids"
-  repeated string target_ids = 2;
+  repeated string target_ids = 3;
 }
-
 
 message ValidateRequest {
   // 用户名称
@@ -117,4 +127,28 @@ message ValidateRequest {
   // 登陆密码
   // @gotags: json:"password"
   string password = 2;
+}
+
+message UpdateUserRequest {
+  // 更新模式
+  // @gotags: json:"update_mode"
+  infraboard.mcube.request.UpdateMode update_mode = 1;
+  // 用户Id
+  // @gotags: json:"user_id" validate:"required,lte=120"
+  string user_id = 2;
+  // profile 用户信息
+  // @gotags: json:"profile"
+  Profile profile = 3;
+  // profile 用户信息
+  // @gotags: json:"wechat_id"
+  string wechat_id = 4;
+  // target_id
+  // @gotags: bson:"target_ids" json:"target_ids"
+  repeated string target_ids = 5;
+}
+
+message DeleteUserRequest {
+  // 用户账号id
+  // @gotags: json:"user_ids" validate:"required,lte=60"
+  repeated string user_ids = 2;
 }

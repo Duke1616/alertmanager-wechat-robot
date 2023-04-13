@@ -28,6 +28,10 @@ type RPCClient interface {
 	DescribeRule(ctx context.Context, in *DescribeRuleRequest, opts ...grpc.CallOption) (*Rule, error)
 	// 查询群组下的所有规则
 	QueryRule(ctx context.Context, in *QueryRuleRequest, opts ...grpc.CallOption) (*RuleSet, error)
+	// 删除群组规则
+	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*RuleSet, error)
+	// 更新群组规则
+	UpdateRule(ctx context.Context, in *UpdateDeleteRequest, opts ...grpc.CallOption) (*Rule, error)
 }
 
 type rPCClient struct {
@@ -65,6 +69,24 @@ func (c *rPCClient) QueryRule(ctx context.Context, in *QueryRuleRequest, opts ..
 	return out, nil
 }
 
+func (c *rPCClient) DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*RuleSet, error) {
+	out := new(RuleSet)
+	err := c.cc.Invoke(ctx, "/robot.rule.RPC/DeleteRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) UpdateRule(ctx context.Context, in *UpdateDeleteRequest, opts ...grpc.CallOption) (*Rule, error) {
+	out := new(Rule)
+	err := c.cc.Invoke(ctx, "/robot.rule.RPC/UpdateRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCServer is the server API for RPC service.
 // All implementations must embed UnimplementedRPCServer
 // for forward compatibility
@@ -75,6 +97,10 @@ type RPCServer interface {
 	DescribeRule(context.Context, *DescribeRuleRequest) (*Rule, error)
 	// 查询群组下的所有规则
 	QueryRule(context.Context, *QueryRuleRequest) (*RuleSet, error)
+	// 删除群组规则
+	DeleteRule(context.Context, *DeleteRuleRequest) (*RuleSet, error)
+	// 更新群组规则
+	UpdateRule(context.Context, *UpdateDeleteRequest) (*Rule, error)
 	mustEmbedUnimplementedRPCServer()
 }
 
@@ -90,6 +116,12 @@ func (UnimplementedRPCServer) DescribeRule(context.Context, *DescribeRuleRequest
 }
 func (UnimplementedRPCServer) QueryRule(context.Context, *QueryRuleRequest) (*RuleSet, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryRule not implemented")
+}
+func (UnimplementedRPCServer) DeleteRule(context.Context, *DeleteRuleRequest) (*RuleSet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRule not implemented")
+}
+func (UnimplementedRPCServer) UpdateRule(context.Context, *UpdateDeleteRequest) (*Rule, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRule not implemented")
 }
 func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
 
@@ -158,6 +190,42 @@ func _RPC_QueryRule_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_DeleteRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).DeleteRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.rule.RPC/DeleteRule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).DeleteRule(ctx, req.(*DeleteRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPC_UpdateRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).UpdateRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.rule.RPC/UpdateRule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).UpdateRule(ctx, req.(*UpdateDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPC_ServiceDesc is the grpc.ServiceDesc for RPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +244,14 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryRule",
 			Handler:    _RPC_QueryRule_Handler,
+		},
+		{
+			MethodName: "DeleteRule",
+			Handler:    _RPC_DeleteRule_Handler,
+		},
+		{
+			MethodName: "UpdateRule",
+			Handler:    _RPC_UpdateRule_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

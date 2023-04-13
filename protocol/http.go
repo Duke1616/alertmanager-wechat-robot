@@ -139,6 +139,6 @@ func (s *HTTPService) RegistryEndpoint() {
 	if err != nil {
 		s.l.Warnf("registry endpoints error, %s", err)
 	} else {
-		s.l.Debug("service endpoints registry success")
+		s.l.Info("service endpoints registry success")
 	}
 }

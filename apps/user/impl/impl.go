@@ -1,7 +1,10 @@
 package impl
 
 import (
+	"context"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
@@ -30,7 +33,22 @@ func (s *service) Config() error {
 		return err
 	}
 
-	s.col = db.Collection(s.Name())
+	dc := db.Collection(s.Name())
+	indexes := []mongo.IndexModel{
+		{
+			Keys: bsonx.Doc{
+				{Key: "spec.name", Value: bsonx.Int32(-1)},
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	}
+
+	_, err = dc.Indexes().CreateMany(context.Background(), indexes)
+	if err != nil {
+		return err
+	}
+
+	s.col = dc
 
 	s.log = zap.L().Named(s.Name())
 	return nil

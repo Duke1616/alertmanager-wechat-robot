@@ -7,7 +7,7 @@ import (
 )
 
 func (h *handler) CreateTarget(r *restful.Request, w *restful.Response) {
-	req := &target.Target{}
+	req := &target.CreateTargetRequest{}
 	if err := r.ReadEntity(req); err != nil {
 		response.Failed(w, err)
 		return
@@ -43,4 +43,31 @@ func (h *handler) QueryTarget(r *restful.Request, w *restful.Response) {
 	}
 
 	response.Success(w, ins)
+}
+
+func (h *handler) PutTarget(r *restful.Request, w *restful.Response) {
+	req := target.NewPutTargetRequest(r.PathParameter("id"))
+	if err := r.ReadEntity(req); err != nil {
+		response.Failed(w, err)
+		return
+	}
+
+	set, err := h.service.UpdateTarget(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+	response.Success(w, set)
+}
+
+func (h *handler) DeleteTarget(r *restful.Request, w *restful.Response) {
+	req := target.NewDeleteTargetRequest()
+	req.TargetIds = append(req.TargetIds, r.PathParameter("id"))
+
+	set, err := h.service.DeleteTarget(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+	response.Success(w, set)
 }

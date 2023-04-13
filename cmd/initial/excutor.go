@@ -122,7 +122,7 @@ type executor struct {
 }
 
 func (e *executor) InitTarget(ctx context.Context) error {
-	req := target.NewDefaultTarget()
+	req := &target.CreateTargetRequest{}
 	req.Url = e.wechatUrl
 	req.Secret = e.wechatSecret
 	req.Name = e.wechatName
@@ -131,7 +131,7 @@ func (e *executor) InitTarget(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Printf("初始化企业微信机器人信息: %9s [成功]", ins.Name)
+	fmt.Printf("初始化企业微信机器人信息: %9s [成功]", ins.Spec.Name)
 	fmt.Println()
 	return nil
 }

@@ -44,3 +44,45 @@ func (h *handler) QueryUser(r *restful.Request, w *restful.Response) {
 
 	response.Success(w, ins)
 }
+
+func (h *handler) PutUser(r *restful.Request, w *restful.Response) {
+	req := user.NewPutUserRequest(r.PathParameter("id"))
+	if err := r.ReadEntity(req); err != nil {
+		response.Failed(w, err)
+		return
+	}
+
+	set, err := h.service.UpdateUser(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+	response.Success(w, set)
+}
+
+func (h *handler) PatchUser(r *restful.Request, w *restful.Response) {
+	req := user.NewPatchUserRequest(r.PathParameter("id"))
+	if err := r.ReadEntity(req.Profile); err != nil {
+		response.Failed(w, err)
+		return
+	}
+
+	set, err := h.service.UpdateUser(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+	response.Success(w, set)
+}
+
+func (h *handler) DeleteUser(r *restful.Request, w *restful.Response) {
+	req := user.NewDeleteUserRequest()
+	req.UserIds = append(req.UserIds, r.PathParameter("id"))
+
+	set, err := h.service.DeleteUser(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+	response.Success(w, set)
+}

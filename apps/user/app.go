@@ -2,8 +2,10 @@ package user
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/imdario/mergo"
 	"github.com/infraboard/mcube/exception"
 	"github.com/infraboard/mcube/http/request"
+	pb_request "github.com/infraboard/mcube/pb/request"
 	"github.com/rs/xid"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -65,13 +67,18 @@ func NewQueryUserRequestFromHTTP(r *http.Request) *QueryUserRequest {
 
 	//req.TargetId = qs.Get("target_id")
 
-	ids := qs.Get("target_id")
-	if ids != "" {
-		index := strings.Index(ids, ",")
+	tids := qs.Get("target_ids")
+	if tids != "" {
+		index := strings.Index(tids, ",")
 		if index == -1 {
-			ids += ","
+			tids += ","
 		}
-		req.TargetIds = strings.Split(ids, ",")
+		req.TargetIds = strings.Split(tids, ",")
+	}
+
+	uids := qs.Get("user_ids")
+	if uids != "" {
+		req.UserIds = strings.Split(uids, ",")
 	}
 
 	req.Page = page
@@ -125,5 +132,62 @@ func NewValidate(user, password string) *ValidateRequest {
 	return &ValidateRequest{
 		Name:     user,
 		Password: password,
+	}
+}
+
+func (i *User) Update(req *UpdateUserRequest) {
+	i.UpdateAt = time.Now().UnixMilli()
+	i.Profile = req.Profile
+	i.Spec.WechatId = req.WechatId
+	i.Spec.TargetIds = req.TargetIds
+}
+
+func (i *User) Patch(req *UpdateUserRequest) error {
+	i.UpdateAt = time.Now().UnixMicro()
+	err := mergo.MergeWithOverwrite(i.Profile, req.Profile)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserSet) HasUser(userId string) bool {
+	for i := range s.Items {
+		if s.Items[i].Id == userId {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (s *UserSet) UserIds() (uids []string) {
+	for i := range s.Items {
+		uids = append(uids, s.Items[i].Id)
+	}
+
+	return
+}
+
+func NewPutUserRequest(userId string) *UpdateUserRequest {
+	return &UpdateUserRequest{
+		UserId:     userId,
+		UpdateMode: pb_request.UpdateMode_PUT,
+		Profile:    &Profile{},
+	}
+}
+
+func NewPatchUserRequest(userId string) *UpdateUserRequest {
+	return &UpdateUserRequest{
+		UserId:     userId,
+		UpdateMode: pb_request.UpdateMode_PATCH,
+		Profile:    &Profile{},
+	}
+}
+
+func NewDeleteUserRequest() *DeleteUserRequest {
+	return &DeleteUserRequest{
+		UserIds: []string{},
 	}
 }

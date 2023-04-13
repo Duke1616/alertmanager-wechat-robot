@@ -23,11 +23,15 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCClient interface {
 	// 创建消息通知群组信息
-	CreateTarget(ctx context.Context, in *Target, opts ...grpc.CallOption) (*Target, error)
+	CreateTarget(ctx context.Context, in *CreateTargetRequest, opts ...grpc.CallOption) (*Target, error)
 	// 查看群组详细信息
 	DescribeTarget(ctx context.Context, in *DescribeTargetRequest, opts ...grpc.CallOption) (*Target, error)
-	//  查看群组信息
+	// 查看群组信息
 	QueryTarget(ctx context.Context, in *QueryTargetRequest, opts ...grpc.CallOption) (*TargetSet, error)
+	// 删除群组
+	DeleteTarget(ctx context.Context, in *DeleteTargetRequest, opts ...grpc.CallOption) (*TargetSet, error)
+	// 更新群组
+	UpdateTarget(ctx context.Context, in *UpdateTargetRequest, opts ...grpc.CallOption) (*Target, error)
 }
 
 type rPCClient struct {
@@ -38,7 +42,7 @@ func NewRPCClient(cc grpc.ClientConnInterface) RPCClient {
 	return &rPCClient{cc}
 }
 
-func (c *rPCClient) CreateTarget(ctx context.Context, in *Target, opts ...grpc.CallOption) (*Target, error) {
+func (c *rPCClient) CreateTarget(ctx context.Context, in *CreateTargetRequest, opts ...grpc.CallOption) (*Target, error) {
 	out := new(Target)
 	err := c.cc.Invoke(ctx, "/robot.target.RPC/CreateTarget", in, out, opts...)
 	if err != nil {
@@ -65,16 +69,38 @@ func (c *rPCClient) QueryTarget(ctx context.Context, in *QueryTargetRequest, opt
 	return out, nil
 }
 
+func (c *rPCClient) DeleteTarget(ctx context.Context, in *DeleteTargetRequest, opts ...grpc.CallOption) (*TargetSet, error) {
+	out := new(TargetSet)
+	err := c.cc.Invoke(ctx, "/robot.target.RPC/DeleteTarget", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) UpdateTarget(ctx context.Context, in *UpdateTargetRequest, opts ...grpc.CallOption) (*Target, error) {
+	out := new(Target)
+	err := c.cc.Invoke(ctx, "/robot.target.RPC/UpdateTarget", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCServer is the server API for RPC service.
 // All implementations must embed UnimplementedRPCServer
 // for forward compatibility
 type RPCServer interface {
 	// 创建消息通知群组信息
-	CreateTarget(context.Context, *Target) (*Target, error)
+	CreateTarget(context.Context, *CreateTargetRequest) (*Target, error)
 	// 查看群组详细信息
 	DescribeTarget(context.Context, *DescribeTargetRequest) (*Target, error)
-	//  查看群组信息
+	// 查看群组信息
 	QueryTarget(context.Context, *QueryTargetRequest) (*TargetSet, error)
+	// 删除群组
+	DeleteTarget(context.Context, *DeleteTargetRequest) (*TargetSet, error)
+	// 更新群组
+	UpdateTarget(context.Context, *UpdateTargetRequest) (*Target, error)
 	mustEmbedUnimplementedRPCServer()
 }
 
@@ -82,7 +108,7 @@ type RPCServer interface {
 type UnimplementedRPCServer struct {
 }
 
-func (UnimplementedRPCServer) CreateTarget(context.Context, *Target) (*Target, error) {
+func (UnimplementedRPCServer) CreateTarget(context.Context, *CreateTargetRequest) (*Target, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTarget not implemented")
 }
 func (UnimplementedRPCServer) DescribeTarget(context.Context, *DescribeTargetRequest) (*Target, error) {
@@ -90,6 +116,12 @@ func (UnimplementedRPCServer) DescribeTarget(context.Context, *DescribeTargetReq
 }
 func (UnimplementedRPCServer) QueryTarget(context.Context, *QueryTargetRequest) (*TargetSet, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryTarget not implemented")
+}
+func (UnimplementedRPCServer) DeleteTarget(context.Context, *DeleteTargetRequest) (*TargetSet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTarget not implemented")
+}
+func (UnimplementedRPCServer) UpdateTarget(context.Context, *UpdateTargetRequest) (*Target, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTarget not implemented")
 }
 func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
 
@@ -105,7 +137,7 @@ func RegisterRPCServer(s grpc.ServiceRegistrar, srv RPCServer) {
 }
 
 func _RPC_CreateTarget_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Target)
+	in := new(CreateTargetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -117,7 +149,7 @@ func _RPC_CreateTarget_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/robot.target.RPC/CreateTarget",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCServer).CreateTarget(ctx, req.(*Target))
+		return srv.(RPCServer).CreateTarget(ctx, req.(*CreateTargetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -158,6 +190,42 @@ func _RPC_QueryTarget_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_DeleteTarget_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTargetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).DeleteTarget(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.target.RPC/DeleteTarget",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).DeleteTarget(ctx, req.(*DeleteTargetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPC_UpdateTarget_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTargetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).UpdateTarget(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.target.RPC/UpdateTarget",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).UpdateTarget(ctx, req.(*UpdateTargetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPC_ServiceDesc is the grpc.ServiceDesc for RPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +244,14 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryTarget",
 			Handler:    _RPC_QueryTarget_Handler,
+		},
+		{
+			MethodName: "DeleteTarget",
+			Handler:    _RPC_DeleteTarget_Handler,
+		},
+		{
+			MethodName: "UpdateTarget",
+			Handler:    _RPC_UpdateTarget_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

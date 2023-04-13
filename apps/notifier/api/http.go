@@ -36,7 +36,7 @@ func (h *handler) Version() string {
 }
 
 func (h *handler) Registry(ws *restful.WebService) {
-	tags := []string{""}
+	tags := []string{"消息发送模块"}
 
 	ws.Route(ws.POST("/send").To(h.SendWechatRobot).
 		Doc("发送wechat robot进行报警").

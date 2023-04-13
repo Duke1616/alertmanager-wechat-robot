@@ -27,9 +27,12 @@ message Rule {
   // 创建时间
   // @gotags: bson:"create_at" json:"create_at"
   int64 create_at = 3;
+  // 创建时间
+  // @gotags: bson:"update_at" json:"update_at"
+  int64 update_at = 4;
   // 创建信息
   // @gotags: bson:"spec" json:"spec"
-  CreateRuleRequest spec = 4;
+  CreateRuleRequest spec = 5;
 }
 
 message RuleSet {
