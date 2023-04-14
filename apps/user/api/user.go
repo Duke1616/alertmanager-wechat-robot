@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
+	"github.com/Duke1616/alertmanager-wechat-robot/utils"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/infraboard/mcube/http/restful/response"
 )
@@ -19,7 +20,7 @@ func (h *handler) CreateUser(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, set)
+	utils.Success(w, set)
 }
 
 func (h *handler) DescribeUser(r *restful.Request, w *restful.Response) {

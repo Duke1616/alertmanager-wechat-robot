@@ -44,3 +44,15 @@ func (h *handler) QueryRule(r *restful.Request, w *restful.Response) {
 
 	response.Success(w, ins)
 }
+
+func (h *handler) DeleteRule(r *restful.Request, w *restful.Response) {
+	req := rule.NewDeleteTargetRequest()
+	req.RuleIds = append(req.RuleIds, r.PathParameter("id"))
+
+	set, err := h.service.DeleteRule(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+	response.Success(w, set)
+}

@@ -1,6 +1,7 @@
 package all
 
 import (
+	_ "github.com/Duke1616/alertmanager-wechat-robot/apps/alert/impl"
 	_ "github.com/Duke1616/alertmanager-wechat-robot/apps/endpoint/impl"
 	_ "github.com/Duke1616/alertmanager-wechat-robot/apps/notifier/impl"
 	_ "github.com/Duke1616/alertmanager-wechat-robot/apps/rule/impl"

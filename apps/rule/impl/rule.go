@@ -82,3 +82,32 @@ func (s *service) QueryRule(ctx context.Context, req *rule.QueryRuleRequest) (*r
 
 	return set, nil
 }
+
+func (s *service) DeleteRule(ctx context.Context, req *rule.DeleteRuleRequest) (*rule.RuleSet, error) {
+	// 判断这些要删除的用户是否存在
+	queryReq := rule.NewDefaultQueryRuleRequest()
+	queryReq.RuleIds = req.RuleIds
+	set, err := s.QueryRule(ctx, queryReq)
+	if err != nil {
+		return nil, err
+	}
+
+	var noExist []string
+	for _, uid := range req.RuleIds {
+		if !set.HasTarget(uid) {
+			noExist = append(noExist, uid)
+		}
+	}
+	if len(noExist) > 0 {
+		return nil, exception.NewBadRequest("user %v not found", req.RuleIds)
+	}
+
+	if err = s.delete(ctx, set); err != nil {
+		return nil, err
+	}
+	return set, nil
+}
+
+func (s *service) UpdateRule(ctx context.Context, req *rule.UpdateDeleteRequest) (*rule.Rule, error) {
+	return nil, nil
+}

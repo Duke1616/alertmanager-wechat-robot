@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/alert"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notifier"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
@@ -41,6 +42,17 @@ func (s *service) SendWechatRobot(ctx context.Context, req *notifier.Notificatio
 	// 发送消息通知
 	wechatUrl := fmt.Sprintf("%s%s%s", t.Spec.Url, "/cgi-bin/webhook/send?key=", t.Spec.Secret)
 	err = s.send(wechatUrl, md)
+	if err != nil {
+		return nil, err
+	}
+
+	// 保存报警记录
+	_, err = s.alert.SaveAlertInformation(ctx, &alert.SaveAlertRequest{
+		TargetName: t.Spec.Name,
+		Alerts:     notifierWechat.Notification.Alerts,
+		Mention:    notifierWechat.Mention,
+	})
+
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/alert"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notifier"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/golang/protobuf/jsonpb"
@@ -17,7 +18,7 @@ func (h *handler) SendWechatRobot(r *restful.Request, w *restful.Response) {
 	req := &notifier.NotificationInfo{
 		Name: name,
 		Notification: &notifier.Notification{
-			Alerts: []*notifier.Alert{},
+			Alerts: []*alert.Alert{},
 		},
 	}
 

@@ -43,6 +43,9 @@ message QueryRuleRequest {
   // rule相关target id
   // @gotags: json:"label_type"
   LABEL_TYPE label_type = 3;
+  // rule相关target id
+  // @gotags: json:"rule_ids"
+  repeated string rule_ids = 4;
 }
 
 message UpdateDeleteRequest {

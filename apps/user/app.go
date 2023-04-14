@@ -67,13 +67,13 @@ func NewQueryUserRequestFromHTTP(r *http.Request) *QueryUserRequest {
 
 	//req.TargetId = qs.Get("target_id")
 
-	tids := qs.Get("target_ids")
-	if tids != "" {
-		index := strings.Index(tids, ",")
+	tnames := qs.Get("target_names")
+	if tnames != "" {
+		index := strings.Index(tnames, ",")
 		if index == -1 {
-			tids += ","
+			tnames += ","
 		}
-		req.TargetIds = strings.Split(tids, ",")
+		req.TargetNames = strings.Split(tnames, ",")
 	}
 
 	uids := qs.Get("user_ids")
@@ -139,7 +139,7 @@ func (i *User) Update(req *UpdateUserRequest) {
 	i.UpdateAt = time.Now().UnixMilli()
 	i.Profile = req.Profile
 	i.Spec.WechatId = req.WechatId
-	i.Spec.TargetIds = req.TargetIds
+	i.Spec.TargetNames = req.TargetNames
 }
 
 func (i *User) Patch(req *UpdateUserRequest) error {

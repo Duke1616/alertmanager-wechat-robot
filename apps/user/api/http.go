@@ -58,12 +58,13 @@ func (h *handler) Registry(ws *restful.WebService) {
 	ws.Route(ws.GET("/").To(h.QueryUser).
 		Doc("查询条件匹配用户信息").
 		Metadata(label.Resource, user.AppName).
-		Metadata(label.Auth, false).
+		Metadata(label.Auth, true).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Param(ws.QueryParameter("page_size", "每一页的数据条数").DataType("uint64")).
 		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
 		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
-		Param(ws.QueryParameter("target_ids", "查询target_id的用户，以逗号分割传递").DataType("string")).
+		Param(ws.QueryParameter("user_ids", "查询user_ids的用户，以逗号分割传递").DataType("string")).
+		Param(ws.QueryParameter("target_names", "查询存在target中的用户，以逗号分割传递").DataType("string")).
 		Writes(user.UserSet{}).
 		Returns(200, "OK", user.UserSet{}).
 		Returns(404, "Not Found", nil))
@@ -87,7 +88,7 @@ func (h *handler) Registry(ws *restful.WebService) {
 	ws.Route(ws.DELETE("/{id}").To(h.DeleteUser).
 		Doc("删除用户").
 		Metadata(label.Resource, user.AppName).
-		Metadata(label.Auth, false).
+		Metadata(label.Auth, true).
 		Param(ws.PathParameter("id", "用户id").DataType("string")).
 		Metadata(restfulspec.KeyOpenAPITags, tags))
 }

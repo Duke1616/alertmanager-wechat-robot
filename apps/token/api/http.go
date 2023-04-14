@@ -43,7 +43,9 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(token.IssueTokenRequest{}).
-		Writes(token.Token{}))
+		Writes(token.Token{}).
+		Returns(200, "OK", token.Token{}).
+		Returns(404, "Not Found", nil))
 
 	ws.Route(ws.GET("/validate").To(h.ValidateToken).
 		Doc("验证token").

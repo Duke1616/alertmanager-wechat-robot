@@ -72,11 +72,11 @@ func (s *service) delete(ctx context.Context, set *target.TargetSet) error {
 	}
 
 	if err != nil {
-		return exception.NewInternalServerError("delete user(%s) error, %s", set, err)
+		return exception.NewInternalServerError("delete target(%s) error, %s", set, err)
 	}
 
 	if result.DeletedCount == 0 {
-		return exception.NewNotFound("user %s not found", set)
+		return exception.NewNotFound("target %s not found", set)
 	}
 
 	return nil
