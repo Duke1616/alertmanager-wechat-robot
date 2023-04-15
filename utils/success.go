@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Success(w *restful.Response, data interface{}, opts ...response.Option) {
+func Success(w *restful.Response, data interface{}, message string, opts ...response.Option) {
 	var (
 		httpCode int
 	)
@@ -25,7 +25,7 @@ func Success(w *restful.Response, data interface{}, opts ...response.Option) {
 
 	resp := response.Data{
 		Code:    &httpCode,
-		Message: "成功",
+		Message: message,
 		Data:    data,
 	}
 

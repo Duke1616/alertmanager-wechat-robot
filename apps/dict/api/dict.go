@@ -7,9 +7,9 @@ import (
 )
 
 func (h *handler) RuleLabelType(r *restful.Request, w *restful.Response) {
-	response.Success(w, dict.RuleLabelType)
+	response.Success(w, dict.PolicyLabelType)
 }
 
 func (h *handler) RuleActive(r *restful.Request, w *restful.Response) {
-	response.Success(w, dict.RuleActive)
+	response.Success(w, dict.PolicyActive)
 }

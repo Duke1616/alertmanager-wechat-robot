@@ -2,7 +2,6 @@ package impl
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 	"github.com/infraboard/mcube/logger"
@@ -17,10 +16,11 @@ var (
 )
 
 type service struct {
-	col *mongo.Collection
+	rule  *mongo.Collection
+	group *mongo.Collection
+
 	log logger.Logger
 	rule.UnimplementedRPCServer
-	target target.RPCServer
 }
 
 func (s *service) Config() error {
@@ -31,8 +31,8 @@ func (s *service) Config() error {
 		return err
 	}
 
-	s.target = app.GetGrpcApp("target").(target.RPCServer)
-	s.col = db.Collection(s.Name())
+	s.rule = db.Collection(s.Name())
+	s.group = db.Collection("group")
 	return nil
 }
 

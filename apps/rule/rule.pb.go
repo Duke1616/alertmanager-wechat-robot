@@ -9,6 +9,7 @@ package rule
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 )
@@ -20,103 +21,284 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type ACTIVE int32
+// Symbols defined in public import of google/protobuf/timestamp.proto.
 
-const (
-	ACTIVE_NEWS ACTIVE = 0
-	// 状态转换
-	ACTIVE_STATUS_TRANS ACTIVE = 2
-	// 丢弃报警
-	ACTIVE_DROP ACTIVE = 1
-)
+type Timestamp = timestamppb.Timestamp
 
-// Enum value maps for ACTIVE.
-var (
-	ACTIVE_name = map[int32]string{
-		0: "NEWS",
-		2: "STATUS_TRANS",
-		1: "DROP",
+type Rules struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// 状态
+	// @gotags: bson:"status" json:"status"
+	Status string `protobuf:"bytes,1,opt,name=status,proto3" json:"status" bson:"status"`
+	// 数据
+	// @gotags: bson:"data" json:"data"
+	Data *Groups `protobuf:"bytes,2,opt,name=data,proto3" json:"data" bson:"data"`
+}
+
+func (x *Rules) Reset() {
+	*x = Rules{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apps_rule_pb_rule_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
 	}
-	ACTIVE_value = map[string]int32{
-		"NEWS":         0,
-		"STATUS_TRANS": 2,
-		"DROP":         1,
+}
+
+func (x *Rules) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Rules) ProtoMessage() {}
+
+func (x *Rules) ProtoReflect() protoreflect.Message {
+	mi := &file_apps_rule_pb_rule_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-)
-
-func (x ACTIVE) Enum() *ACTIVE {
-	p := new(ACTIVE)
-	*p = x
-	return p
+	return mi.MessageOf(x)
 }
 
-func (x ACTIVE) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ACTIVE) Descriptor() protoreflect.EnumDescriptor {
-	return file_apps_rule_pb_rule_proto_enumTypes[0].Descriptor()
-}
-
-func (ACTIVE) Type() protoreflect.EnumType {
-	return &file_apps_rule_pb_rule_proto_enumTypes[0]
-}
-
-func (x ACTIVE) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use ACTIVE.Descriptor instead.
-func (ACTIVE) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use Rules.ProtoReflect.Descriptor instead.
+func (*Rules) Descriptor() ([]byte, []int) {
 	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{0}
 }
 
-type LABEL_TYPE int32
-
-const (
-	// 组策略标签匹配
-	LABEL_TYPE_GROUP LABEL_TYPE = 0
-	// 全局配置标签匹配
-	LABEL_TYPE_COMMON LABEL_TYPE = 1
-)
-
-// Enum value maps for LABEL_TYPE.
-var (
-	LABEL_TYPE_name = map[int32]string{
-		0: "GROUP",
-		1: "COMMON",
+func (x *Rules) GetStatus() string {
+	if x != nil {
+		return x.Status
 	}
-	LABEL_TYPE_value = map[string]int32{
-		"GROUP":  0,
-		"COMMON": 1,
+	return ""
+}
+
+func (x *Rules) GetData() *Groups {
+	if x != nil {
+		return x.Data
 	}
-)
-
-func (x LABEL_TYPE) Enum() *LABEL_TYPE {
-	p := new(LABEL_TYPE)
-	*p = x
-	return p
+	return nil
 }
 
-func (x LABEL_TYPE) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+type Groups struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// 组ID
+	// @gotags: bson:"groups" json:"groups"
+	Groups []*Group `protobuf:"bytes,1,rep,name=groups,proto3" json:"groups" bson:"groups"`
 }
 
-func (LABEL_TYPE) Descriptor() protoreflect.EnumDescriptor {
-	return file_apps_rule_pb_rule_proto_enumTypes[1].Descriptor()
+func (x *Groups) Reset() {
+	*x = Groups{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apps_rule_pb_rule_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
 }
 
-func (LABEL_TYPE) Type() protoreflect.EnumType {
-	return &file_apps_rule_pb_rule_proto_enumTypes[1]
+func (x *Groups) String() string {
+	return protoimpl.X.MessageStringOf(x)
 }
 
-func (x LABEL_TYPE) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
+func (*Groups) ProtoMessage() {}
+
+func (x *Groups) ProtoReflect() protoreflect.Message {
+	mi := &file_apps_rule_pb_rule_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LABEL_TYPE.Descriptor instead.
-func (LABEL_TYPE) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use Groups.ProtoReflect.Descriptor instead.
+func (*Groups) Descriptor() ([]byte, []int) {
 	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Groups) GetGroups() []*Group {
+	if x != nil {
+		return x.Groups
+	}
+	return nil
+}
+
+type Group struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// 组ID
+	// @gotags: bson:"_id" json:"id" validate:"required,lte=64"
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id" bson:"_id" validate:"required,lte=64"`
+	// 组名称
+	// @gotags: bson:"name" json:"name" validate:"required,lte=64"
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name" bson:"name" validate:"required,lte=64"`
+	// 最后更新时间
+	// @gotags: bson:"last_evaluation" json:"lastEvaluation"
+	LastEvaluation string `protobuf:"bytes,3,opt,name=last_evaluation,json=lastEvaluation,proto3" json:"lastEvaluation" bson:"last_evaluation"`
+	// 报警来源类型
+	// @gotags: bson:"type" json:"type"
+	Type string `protobuf:"bytes,4,opt,name=type,proto3" json:"type" bson:"type"`
+	// 组使用的配置文件
+	// @gotags: bson:"file" json:"file"
+	File string `protobuf:"bytes,5,opt,name=file,proto3" json:"file" bson:"file"`
+	// 组报警间隔时间
+	// @gotags: bson:"interval" json:"interval"
+	Interval uint64 `protobuf:"varint,6,opt,name=interval,proto3" json:"interval" bson:"interval"`
+	// 组内报警规则
+	// @gotags: bson:"-" json:"rules"
+	Rules []*Rule `protobuf:"bytes,7,rep,name=rules,proto3" json:"rules" bson:"-"`
+}
+
+func (x *Group) Reset() {
+	*x = Group{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apps_rule_pb_rule_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Group) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Group) ProtoMessage() {}
+
+func (x *Group) ProtoReflect() protoreflect.Message {
+	mi := &file_apps_rule_pb_rule_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Group.ProtoReflect.Descriptor instead.
+func (*Group) Descriptor() ([]byte, []int) {
+	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Group) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Group) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Group) GetLastEvaluation() string {
+	if x != nil {
+		return x.LastEvaluation
+	}
+	return ""
+}
+
+func (x *Group) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *Group) GetFile() string {
+	if x != nil {
+		return x.File
+	}
+	return ""
+}
+
+func (x *Group) GetInterval() uint64 {
+	if x != nil {
+		return x.Interval
+	}
+	return 0
+}
+
+func (x *Group) GetRules() []*Rule {
+	if x != nil {
+		return x.Rules
+	}
+	return nil
+}
+
+type GroupSet struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// 总数量
+	// @gotags: bson:"total" json:"total"
+	Total int64 `protobuf:"varint,1,opt,name=total,proto3" json:"total" bson:"total"`
+	// 数据
+	// @gotags: bson:"items" json:"items"
+	Items []*Group `protobuf:"bytes,2,rep,name=items,proto3" json:"items" bson:"items"`
+}
+
+func (x *GroupSet) Reset() {
+	*x = GroupSet{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apps_rule_pb_rule_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GroupSet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupSet) ProtoMessage() {}
+
+func (x *GroupSet) ProtoReflect() protoreflect.Message {
+	mi := &file_apps_rule_pb_rule_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupSet.ProtoReflect.Descriptor instead.
+func (*GroupSet) Descriptor() ([]byte, []int) {
+	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GroupSet) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GroupSet) GetItems() []*Group {
+	if x != nil {
+		return x.Items
+	}
+	return nil
 }
 
 type Rule struct {
@@ -124,27 +306,39 @@ type Rule struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// rule ID
-	// @gotags: bson:"_id" json:"id"
-	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id" bson:"_id"`
-	// 是否开启
-	// @gotags: bson:"enabled" json:"enabled"
-	Enabled bool `protobuf:"varint,2,opt,name=enabled,proto3" json:"enabled" bson:"enabled"`
-	// 创建时间
-	// @gotags: bson:"create_at" json:"create_at"
-	CreateAt int64 `protobuf:"varint,3,opt,name=create_at,json=createAt,proto3" json:"create_at" bson:"create_at"`
-	// 创建时间
-	// @gotags: bson:"update_at" json:"update_at"
-	UpdateAt int64 `protobuf:"varint,4,opt,name=update_at,json=updateAt,proto3" json:"update_at" bson:"update_at"`
-	// 创建信息
-	// @gotags: bson:"spec" json:"spec"
-	Spec *CreateRuleRequest `protobuf:"bytes,5,opt,name=spec,proto3" json:"spec" bson:"spec"`
+	// 规则ID
+	// @gotags: bson:"_id" json:"id" validate:"required,lte=64"
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id" bson:"_id" validate:"required,lte=64"`
+	// 组id
+	// @gotags: bson:"group_id" json:"group_id"
+	GroupId string `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id" bson:"group_id"`
+	// 组id
+	// @gotags: bson:"group_name" json:"group_name"
+	GroupName string `protobuf:"bytes,3,opt,name=group_name,json=groupName,proto3" json:"group_name" bson:"group_name"`
+	// 规则名称
+	// @gotags: bson:"name" json:"name" validate:"required,lte=64"
+	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name" bson:"name" validate:"required,lte=64"`
+	// 规则查询语句
+	// @gotags: bson:"query" json:"query"
+	Query string `protobuf:"bytes,5,opt,name=query,proto3" json:"query" bson:"query"`
+	// 规则查询语句
+	// @gotags: bson:"level" json:"level"
+	Level string `protobuf:"bytes,6,opt,name=level,proto3" json:"level" bson:"level"`
+	// 规则查询语句
+	// @gotags: bson:"service_name" json:"service_name"
+	ServiceName string `protobuf:"bytes,7,opt,name=service_name,json=serviceName,proto3" json:"service_name" bson:"service_name"`
+	// 规则标签
+	// @gotags: bson:"labels" json:"labels"
+	Labels map[string]string `protobuf:"bytes,8,rep,name=labels,proto3" json:"labels" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3" bson:"labels"`
+	// 规则注释
+	// @gotags: bson:"annotations" json:"annotations"
+	Annotations map[string]string `protobuf:"bytes,9,rep,name=annotations,proto3" json:"annotations" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3" bson:"annotations"`
 }
 
 func (x *Rule) Reset() {
 	*x = Rule{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apps_rule_pb_rule_proto_msgTypes[0]
+		mi := &file_apps_rule_pb_rule_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -157,7 +351,7 @@ func (x *Rule) String() string {
 func (*Rule) ProtoMessage() {}
 
 func (x *Rule) ProtoReflect() protoreflect.Message {
-	mi := &file_apps_rule_pb_rule_proto_msgTypes[0]
+	mi := &file_apps_rule_pb_rule_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -170,7 +364,7 @@ func (x *Rule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Rule.ProtoReflect.Descriptor instead.
 func (*Rule) Descriptor() ([]byte, []int) {
-	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{0}
+	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Rule) GetId() string {
@@ -180,30 +374,58 @@ func (x *Rule) GetId() string {
 	return ""
 }
 
-func (x *Rule) GetEnabled() bool {
+func (x *Rule) GetGroupId() string {
 	if x != nil {
-		return x.Enabled
+		return x.GroupId
 	}
-	return false
+	return ""
 }
 
-func (x *Rule) GetCreateAt() int64 {
+func (x *Rule) GetGroupName() string {
 	if x != nil {
-		return x.CreateAt
+		return x.GroupName
 	}
-	return 0
+	return ""
 }
 
-func (x *Rule) GetUpdateAt() int64 {
+func (x *Rule) GetName() string {
 	if x != nil {
-		return x.UpdateAt
+		return x.Name
 	}
-	return 0
+	return ""
 }
 
-func (x *Rule) GetSpec() *CreateRuleRequest {
+func (x *Rule) GetQuery() string {
 	if x != nil {
-		return x.Spec
+		return x.Query
+	}
+	return ""
+}
+
+func (x *Rule) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+func (x *Rule) GetServiceName() string {
+	if x != nil {
+		return x.ServiceName
+	}
+	return ""
+}
+
+func (x *Rule) GetLabels() map[string]string {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+func (x *Rule) GetAnnotations() map[string]string {
+	if x != nil {
+		return x.Annotations
 	}
 	return nil
 }
@@ -224,7 +446,7 @@ type RuleSet struct {
 func (x *RuleSet) Reset() {
 	*x = RuleSet{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apps_rule_pb_rule_proto_msgTypes[1]
+		mi := &file_apps_rule_pb_rule_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -237,7 +459,7 @@ func (x *RuleSet) String() string {
 func (*RuleSet) ProtoMessage() {}
 
 func (x *RuleSet) ProtoReflect() protoreflect.Message {
-	mi := &file_apps_rule_pb_rule_proto_msgTypes[1]
+	mi := &file_apps_rule_pb_rule_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -250,7 +472,7 @@ func (x *RuleSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RuleSet.ProtoReflect.Descriptor instead.
 func (*RuleSet) Descriptor() ([]byte, []int) {
-	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{1}
+	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *RuleSet) GetTotal() int64 {
@@ -267,213 +489,74 @@ func (x *RuleSet) GetItems() []*Rule {
 	return nil
 }
 
-type CreateRuleRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// 关联target ID
-	// @gotags: bson:"target_id" json:"target_id" validate:"required,lte=64"
-	TargetId string `protobuf:"bytes,1,opt,name=target_id,json=targetId,proto3" json:"target_id" bson:"target_id" validate:"required,lte=64"`
-	// 标签类型
-	// @gotags: bson:"label_type" json:"label_type"
-	LabelType LABEL_TYPE `protobuf:"varint,2,opt,name=label_type,json=labelType,proto3,enum=robot.rule.LABEL_TYPE" json:"label_type" bson:"label_type"`
-	// 匹配标签
-	// @gotags: bson:"label" json:"label" validate:"required,lte=64"
-	Label string `protobuf:"bytes,3,opt,name=label,proto3" json:"label" bson:"label" validate:"required,lte=64"`
-	// 匹配值
-	// @gotags: bson:"value" json:"value"
-	Value []string `protobuf:"bytes,4,rep,name=value,proto3" json:"value" bson:"value"`
-	// 动作
-	// @gotags: bson:"active" json:"active"
-	Active ACTIVE `protobuf:"varint,5,opt,name=active,proto3,enum=robot.rule.ACTIVE" json:"active" bson:"active"`
-	// @其他人
-	// @gotags: bson:"mention" json:"mention"
-	Mention *Mention `protobuf:"bytes,6,opt,name=mention,proto3" json:"mention" bson:"mention"`
-}
-
-func (x *CreateRuleRequest) Reset() {
-	*x = CreateRuleRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apps_rule_pb_rule_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateRuleRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateRuleRequest) ProtoMessage() {}
-
-func (x *CreateRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_apps_rule_pb_rule_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateRuleRequest.ProtoReflect.Descriptor instead.
-func (*CreateRuleRequest) Descriptor() ([]byte, []int) {
-	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *CreateRuleRequest) GetTargetId() string {
-	if x != nil {
-		return x.TargetId
-	}
-	return ""
-}
-
-func (x *CreateRuleRequest) GetLabelType() LABEL_TYPE {
-	if x != nil {
-		return x.LabelType
-	}
-	return LABEL_TYPE_GROUP
-}
-
-func (x *CreateRuleRequest) GetLabel() string {
-	if x != nil {
-		return x.Label
-	}
-	return ""
-}
-
-func (x *CreateRuleRequest) GetValue() []string {
-	if x != nil {
-		return x.Value
-	}
-	return nil
-}
-
-func (x *CreateRuleRequest) GetActive() ACTIVE {
-	if x != nil {
-		return x.Active
-	}
-	return ACTIVE_NEWS
-}
-
-func (x *CreateRuleRequest) GetMention() *Mention {
-	if x != nil {
-		return x.Mention
-	}
-	return nil
-}
-
-// 提到的人
-type Mention struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// 是否@所有人
-	// @gotags: bson:"all" json:"all"
-	All bool `protobuf:"varint,1,opt,name=all,proto3" json:"all" bson:"all"`
-	// @指定的人
-	// @gotags: bson:"mobiles" json:"mobiles"
-	Mobiles []string `protobuf:"bytes,2,rep,name=mobiles,proto3" json:"mobiles" bson:"mobiles"`
-}
-
-func (x *Mention) Reset() {
-	*x = Mention{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_apps_rule_pb_rule_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Mention) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Mention) ProtoMessage() {}
-
-func (x *Mention) ProtoReflect() protoreflect.Message {
-	mi := &file_apps_rule_pb_rule_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Mention.ProtoReflect.Descriptor instead.
-func (*Mention) Descriptor() ([]byte, []int) {
-	return file_apps_rule_pb_rule_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *Mention) GetAll() bool {
-	if x != nil {
-		return x.All
-	}
-	return false
-}
-
-func (x *Mention) GetMobiles() []string {
-	if x != nil {
-		return x.Mobiles
-	}
-	return nil
-}
-
 var File_apps_rule_pb_rule_proto protoreflect.FileDescriptor
 
 var file_apps_rule_pb_rule_proto_rawDesc = []byte{
 	0x0a, 0x17, 0x61, 0x70, 0x70, 0x73, 0x2f, 0x72, 0x75, 0x6c, 0x65, 0x2f, 0x70, 0x62, 0x2f, 0x72,
 	0x75, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x72, 0x6f, 0x62, 0x6f, 0x74,
-	0x2e, 0x72, 0x75, 0x6c, 0x65, 0x22, 0x9d, 0x01, 0x0a, 0x04, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x18,
-	0x0a, 0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52,
-	0x07, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x5f, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x41, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f,
-	0x61, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x41, 0x74, 0x12, 0x31, 0x0a, 0x04, 0x73, 0x70, 0x65, 0x63, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1d, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75, 0x6c, 0x65, 0x2e, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52,
-	0x04, 0x73, 0x70, 0x65, 0x63, 0x22, 0x47, 0x0a, 0x07, 0x52, 0x75, 0x6c, 0x65, 0x53, 0x65, 0x74,
-	0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52,
-	0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x12, 0x26, 0x0a, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x18,
-	0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75,
-	0x6c, 0x65, 0x2e, 0x52, 0x75, 0x6c, 0x65, 0x52, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x22, 0xee,
-	0x01, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x75, 0x6c, 0x65, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x5f, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x49,
-	0x64, 0x12, 0x35, 0x0a, 0x0a, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75,
-	0x6c, 0x65, 0x2e, 0x4c, 0x41, 0x42, 0x45, 0x4c, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x52, 0x09, 0x6c,
-	0x61, 0x62, 0x65, 0x6c, 0x54, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x61, 0x62, 0x65,
-	0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x12, 0x14,
-	0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x04, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x12, 0x2a, 0x0a, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x12, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75, 0x6c,
-	0x65, 0x2e, 0x41, 0x43, 0x54, 0x49, 0x56, 0x45, 0x52, 0x06, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65,
-	0x12, 0x2d, 0x0a, 0x07, 0x6d, 0x65, 0x6e, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x13, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75, 0x6c, 0x65, 0x2e, 0x4d,
-	0x65, 0x6e, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x07, 0x6d, 0x65, 0x6e, 0x74, 0x69, 0x6f, 0x6e, 0x22,
-	0x35, 0x0a, 0x07, 0x4d, 0x65, 0x6e, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x10, 0x0a, 0x03, 0x61, 0x6c,
-	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x03, 0x61, 0x6c, 0x6c, 0x12, 0x18, 0x0a, 0x07,
-	0x6d, 0x6f, 0x62, 0x69, 0x6c, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x6d,
-	0x6f, 0x62, 0x69, 0x6c, 0x65, 0x73, 0x2a, 0x2e, 0x0a, 0x06, 0x41, 0x43, 0x54, 0x49, 0x56, 0x45,
-	0x12, 0x08, 0x0a, 0x04, 0x4e, 0x45, 0x57, 0x53, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c, 0x53, 0x54,
-	0x41, 0x54, 0x55, 0x53, 0x5f, 0x54, 0x52, 0x41, 0x4e, 0x53, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04,
-	0x44, 0x52, 0x4f, 0x50, 0x10, 0x01, 0x2a, 0x23, 0x0a, 0x0a, 0x4c, 0x41, 0x42, 0x45, 0x4c, 0x5f,
-	0x54, 0x59, 0x50, 0x45, 0x12, 0x09, 0x0a, 0x05, 0x47, 0x52, 0x4f, 0x55, 0x50, 0x10, 0x00, 0x12,
-	0x0a, 0x0a, 0x06, 0x43, 0x4f, 0x4d, 0x4d, 0x4f, 0x4e, 0x10, 0x01, 0x42, 0x39, 0x5a, 0x37, 0x67,
-	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x44, 0x75, 0x6b, 0x65, 0x31, 0x36,
-	0x31, 0x36, 0x2f, 0x61, 0x6c, 0x65, 0x72, 0x74, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x2d,
-	0x77, 0x65, 0x63, 0x68, 0x61, 0x74, 0x2d, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2f, 0x61, 0x70, 0x70,
-	0x73, 0x2f, 0x72, 0x75, 0x6c, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x72, 0x75, 0x6c, 0x65, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x47, 0x0a, 0x05, 0x52, 0x75, 0x6c, 0x65, 0x73, 0x12,
+	0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x26, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75,
+	0x6c, 0x65, 0x2e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x73, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22,
+	0x33, 0x0a, 0x06, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x73, 0x12, 0x29, 0x0a, 0x06, 0x67, 0x72, 0x6f,
+	0x75, 0x70, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x72, 0x6f, 0x62, 0x6f,
+	0x74, 0x2e, 0x72, 0x75, 0x6c, 0x65, 0x2e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x06, 0x67, 0x72,
+	0x6f, 0x75, 0x70, 0x73, 0x22, 0xc0, 0x01, 0x0a, 0x05, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x0e,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12,
+	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x12, 0x27, 0x0a, 0x0f, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x65, 0x76, 0x61, 0x6c, 0x75,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x6c, 0x61, 0x73,
+	0x74, 0x45, 0x76, 0x61, 0x6c, 0x75, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x74,
+	0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12,
+	0x12, 0x0a, 0x04, 0x66, 0x69, 0x6c, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x66,
+	0x69, 0x6c, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x18,
+	0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x76, 0x61, 0x6c, 0x12,
+	0x26, 0x0a, 0x05, 0x72, 0x75, 0x6c, 0x65, 0x73, 0x18, 0x07, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10,
+	0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75, 0x6c, 0x65, 0x2e, 0x52, 0x75, 0x6c, 0x65,
+	0x52, 0x05, 0x72, 0x75, 0x6c, 0x65, 0x73, 0x22, 0x49, 0x0a, 0x08, 0x47, 0x72, 0x6f, 0x75, 0x70,
+	0x53, 0x65, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x03, 0x52, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x12, 0x27, 0x0a, 0x05, 0x69, 0x74, 0x65,
+	0x6d, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74,
+	0x2e, 0x72, 0x75, 0x6c, 0x65, 0x2e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x05, 0x69, 0x74, 0x65,
+	0x6d, 0x73, 0x22, 0xa9, 0x03, 0x0a, 0x04, 0x52, 0x75, 0x6c, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x67,
+	0x72, 0x6f, 0x75, 0x70, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67,
+	0x72, 0x6f, 0x75, 0x70, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x5f,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x67, 0x72, 0x6f, 0x75,
+	0x70, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x71, 0x75, 0x65,
+	0x72, 0x79, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x12,
+	0x14, 0x0a, 0x05, 0x6c, 0x65, 0x76, 0x65, 0x6c, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x6c, 0x65, 0x76, 0x65, 0x6c, 0x12, 0x21, 0x0a, 0x0c, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x34, 0x0a, 0x06, 0x6c, 0x61, 0x62, 0x65,
+	0x6c, 0x73, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74,
+	0x2e, 0x72, 0x75, 0x6c, 0x65, 0x2e, 0x52, 0x75, 0x6c, 0x65, 0x2e, 0x4c, 0x61, 0x62, 0x65, 0x6c,
+	0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x06, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x12, 0x43,
+	0x0a, 0x0b, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x09, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75, 0x6c, 0x65,
+	0x2e, 0x52, 0x75, 0x6c, 0x65, 0x2e, 0x41, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x0b, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x73, 0x1a, 0x39, 0x0a, 0x0b, 0x4c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x45, 0x6e, 0x74,
+	0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a, 0x3e,
+	0x0a, 0x10, 0x41, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x45, 0x6e, 0x74,
+	0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x47,
+	0x0a, 0x07, 0x52, 0x75, 0x6c, 0x65, 0x53, 0x65, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x74,
+	0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x12,
+	0x26, 0x0a, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10,
+	0x2e, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x72, 0x75, 0x6c, 0x65, 0x2e, 0x52, 0x75, 0x6c, 0x65,
+	0x52, 0x05, 0x69, 0x74, 0x65, 0x6d, 0x73, 0x42, 0x39, 0x5a, 0x37, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x44, 0x75, 0x6b, 0x65, 0x31, 0x36, 0x31, 0x36, 0x2f, 0x61,
+	0x6c, 0x65, 0x72, 0x74, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x2d, 0x77, 0x65, 0x63, 0x68,
+	0x61, 0x74, 0x2d, 0x72, 0x6f, 0x62, 0x6f, 0x74, 0x2f, 0x61, 0x70, 0x70, 0x73, 0x2f, 0x72, 0x75,
+	0x6c, 0x65, 0x50, 0x00, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -488,27 +571,30 @@ func file_apps_rule_pb_rule_proto_rawDescGZIP() []byte {
 	return file_apps_rule_pb_rule_proto_rawDescData
 }
 
-var file_apps_rule_pb_rule_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_apps_rule_pb_rule_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_apps_rule_pb_rule_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_apps_rule_pb_rule_proto_goTypes = []interface{}{
-	(ACTIVE)(0),               // 0: robot.rule.ACTIVE
-	(LABEL_TYPE)(0),           // 1: robot.rule.LABEL_TYPE
-	(*Rule)(nil),              // 2: robot.rule.Rule
-	(*RuleSet)(nil),           // 3: robot.rule.RuleSet
-	(*CreateRuleRequest)(nil), // 4: robot.rule.CreateRuleRequest
-	(*Mention)(nil),           // 5: robot.rule.Mention
+	(*Rules)(nil),    // 0: robot.rule.Rules
+	(*Groups)(nil),   // 1: robot.rule.Groups
+	(*Group)(nil),    // 2: robot.rule.Group
+	(*GroupSet)(nil), // 3: robot.rule.GroupSet
+	(*Rule)(nil),     // 4: robot.rule.Rule
+	(*RuleSet)(nil),  // 5: robot.rule.RuleSet
+	nil,              // 6: robot.rule.Rule.LabelsEntry
+	nil,              // 7: robot.rule.Rule.AnnotationsEntry
 }
 var file_apps_rule_pb_rule_proto_depIdxs = []int32{
-	4, // 0: robot.rule.Rule.spec:type_name -> robot.rule.CreateRuleRequest
-	2, // 1: robot.rule.RuleSet.items:type_name -> robot.rule.Rule
-	1, // 2: robot.rule.CreateRuleRequest.label_type:type_name -> robot.rule.LABEL_TYPE
-	0, // 3: robot.rule.CreateRuleRequest.active:type_name -> robot.rule.ACTIVE
-	5, // 4: robot.rule.CreateRuleRequest.mention:type_name -> robot.rule.Mention
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	1, // 0: robot.rule.Rules.data:type_name -> robot.rule.Groups
+	2, // 1: robot.rule.Groups.groups:type_name -> robot.rule.Group
+	4, // 2: robot.rule.Group.rules:type_name -> robot.rule.Rule
+	2, // 3: robot.rule.GroupSet.items:type_name -> robot.rule.Group
+	6, // 4: robot.rule.Rule.labels:type_name -> robot.rule.Rule.LabelsEntry
+	7, // 5: robot.rule.Rule.annotations:type_name -> robot.rule.Rule.AnnotationsEntry
+	4, // 6: robot.rule.RuleSet.items:type_name -> robot.rule.Rule
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_apps_rule_pb_rule_proto_init() }
@@ -518,7 +604,7 @@ func file_apps_rule_pb_rule_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_apps_rule_pb_rule_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Rule); i {
+			switch v := v.(*Rules); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -530,7 +616,7 @@ func file_apps_rule_pb_rule_proto_init() {
 			}
 		}
 		file_apps_rule_pb_rule_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RuleSet); i {
+			switch v := v.(*Groups); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -542,7 +628,7 @@ func file_apps_rule_pb_rule_proto_init() {
 			}
 		}
 		file_apps_rule_pb_rule_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateRuleRequest); i {
+			switch v := v.(*Group); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -554,7 +640,31 @@ func file_apps_rule_pb_rule_proto_init() {
 			}
 		}
 		file_apps_rule_pb_rule_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Mention); i {
+			switch v := v.(*GroupSet); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_apps_rule_pb_rule_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Rule); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_apps_rule_pb_rule_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RuleSet); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -571,14 +681,13 @@ func file_apps_rule_pb_rule_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_apps_rule_pb_rule_proto_rawDesc,
-			NumEnums:      2,
-			NumMessages:   4,
+			NumEnums:      0,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_apps_rule_pb_rule_proto_goTypes,
 		DependencyIndexes: file_apps_rule_pb_rule_proto_depIdxs,
-		EnumInfos:         file_apps_rule_pb_rule_proto_enumTypes,
 		MessageInfos:      file_apps_rule_pb_rule_proto_msgTypes,
 	}.Build()
 	File_apps_rule_pb_rule_proto = out.File

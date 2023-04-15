@@ -2,36 +2,36 @@ package api
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
+	"github.com/Duke1616/alertmanager-wechat-robot/utils"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/infraboard/mcube/http/restful/response"
 )
 
-func (h *handler) CreateRule(r *restful.Request, w *restful.Response) {
-	req := &rule.CreateRuleRequest{}
+func (h *handler) SyncRule(r *restful.Request, w *restful.Response) {
+	req := &rule.SyncRuleRequest{}
 	if err := r.ReadEntity(req); err != nil {
 		response.Failed(w, err)
 		return
 	}
 
-	set, err := h.service.CreateRule(r.Request.Context(), req)
+	set, err := h.service.SyncRule(r.Request.Context(), req)
 	if err != nil {
 		response.Failed(w, err)
 		return
 	}
 
-	response.Success(w, set)
+	utils.Success(w, set, "同步数据成功")
 }
 
-func (h *handler) DescribeRule(r *restful.Request, w *restful.Response) {
-	req := rule.NewDescribeRuleRequestById(r.PathParameter("id"))
-
-	ins, err := h.service.DescribeRule(r.Request.Context(), req)
+func (h *handler) QueryGroup(r *restful.Request, w *restful.Response) {
+	req := rule.NewQueryGroupRequestFromHTTP(r.Request)
+	ins, err := h.service.QueryGroup(r.Request.Context(), req)
 	if err != nil {
 		response.Failed(w, err)
 		return
 	}
 
-	response.Success(w, ins)
+	utils.Success(w, ins, "查询告警组成功")
 }
 
 func (h *handler) QueryRule(r *restful.Request, w *restful.Response) {
@@ -42,17 +42,5 @@ func (h *handler) QueryRule(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, ins)
-}
-
-func (h *handler) DeleteRule(r *restful.Request, w *restful.Response) {
-	req := rule.NewDeleteTargetRequest()
-	req.RuleIds = append(req.RuleIds, r.PathParameter("id"))
-
-	set, err := h.service.DeleteRule(r.Request.Context(), req)
-	if err != nil {
-		response.Failed(w, err)
-		return
-	}
-	response.Success(w, set)
+	utils.Success(w, ins, "查询告警信息成功")
 }

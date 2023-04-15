@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/alert"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notifier"
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net/http"
@@ -22,7 +22,7 @@ func (s *service) SendWechatRobot(ctx context.Context, req *notifier.Notificatio
 	notifierWechat := notifier.NewNotifierWechat(req.Notification)
 
 	// 查询所有rule
-	rs, err := s.rule.QueryRule(ctx, rule.NewQueryRuleRequest(t.Id))
+	rs, err := s.policy.QueryPolicy(ctx, policy.NewQueryPolicyRequest(t.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -74,10 +74,10 @@ func (s *service) TransFormToWechat(ctx context.Context, req *notifier.Notificat
 	// 消息通知
 	if req.Mention.All == true {
 		// TODO 目前企业微信机器人不支持@所有人，需要单独扩展
-		buffer.WriteString(fmt.Sprintf("\n通知相关人员: <font color=\"info\"><@all></font>"))
+		buffer.WriteString(fmt.Sprintf("\n告警接收者: <font color=\"info\"><@all></font>"))
 	} else {
 		for _, men := range req.Mention.Mobiles {
-			buffer.WriteString(fmt.Sprintf("\n通知相关人员: <font color=\"info\"><@%s></font>", men))
+			buffer.WriteString(fmt.Sprintf("\n告警接收者: <font color=\"info\"><@%s></font>", men))
 		}
 	}
 

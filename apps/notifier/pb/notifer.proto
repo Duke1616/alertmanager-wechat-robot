@@ -4,7 +4,7 @@ option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/notifier
 
 import public "google/protobuf/timestamp.proto";
 import public "google/protobuf/Empty.proto";
-import "apps/rule/pb/rule.proto";
+import "apps/policy/pb/policy.proto";
 import "apps/alert/pb/alert.proto";
 
 service RPC {
@@ -50,7 +50,7 @@ message Notification {
 message NotificationWechat {
   // 报警详细信息
   // @gotags: bson:"mention" json:"mention"
-  rule.Mention mention = 1;
+  policy.Mention mention = 1;
   // 报警详细信息
   // @gotags: bson:"notification" json:"notification"
   Notification notification = 2;

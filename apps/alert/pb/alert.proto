@@ -4,7 +4,7 @@ option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/alert";
 
 import public "google/protobuf/timestamp.proto";
 import public "google/protobuf/Empty.proto";
-import "apps/rule/pb/rule.proto";
+import "apps/policy/pb/policy.proto";
 
 service RPC {
   // 保存报警信息
@@ -59,7 +59,7 @@ message SaveAlertRequest {
   repeated Alert alerts = 2;
   // 告警通知人
   // @gotags: bson:"mention" json:"mention"
-  rule.Mention mention = 3;
+  policy.Mention mention = 3;
 }
 
 message SaveAlertResponse {

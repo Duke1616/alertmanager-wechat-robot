@@ -20,7 +20,7 @@ func (h *handler) CreateUser(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	utils.Success(w, set)
+	utils.Success(w, set, "创建用户成功")
 }
 
 func (h *handler) DescribeUser(r *restful.Request, w *restful.Response) {

@@ -1,0 +1,76 @@
+syntax = "proto3";
+package robot.policy;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/policy";
+
+import "apps/policy/pb/policy.proto";
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+import "common/pb/github.com/infraboard/mcube/pb/request/request.proto";
+
+service RPC {
+  // 创建规则信息
+  rpc CreatePolicy(CreatePolicyRequest) returns(Policy);
+  // 查看规则信息
+  rpc DescribePolicy(DescribePolicyRequest) returns(Policy);
+  // 查询群组下的所有规则
+  rpc QueryPolicy(QueryPolicyRequest) returns(PolicySet);
+  // 删除群组规则
+  rpc DeletePolicy(DeletePolicyRequest) returns(PolicySet);
+  // 更新群组规则
+  rpc UpdatePolicy(UpdatePolicyRequest) returns(Policy);
+}
+
+enum DESCRIBE_BY {
+  // 通过policy_ids id
+  id = 0;
+}
+
+message DescribePolicyRequest {
+  // 查询详情的方式
+  // @gotags: json:"describe_by"
+  DESCRIBE_BY describe_by = 1;
+  // 服务客户端Id
+  // @gotags: json:"id"
+  string id = 2;
+}
+
+message QueryPolicyRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // target_id
+  // @gotags: json:"target_id"
+  string target_id = 2;
+  // policy 的标签类型
+  // @gotags: json:"label_type"
+  LABEL_TYPE label_type = 3;
+  // policy_ids
+  // @gotags: json:"policy_ids"
+  repeated string policy_ids = 4;
+}
+
+message UpdatePolicyRequest {
+  // 更新模式
+  // @gotags: json:"update_mode"
+  infraboard.mcube.request.UpdateMode update_mode = 1;
+  // 群组id
+  // @gotags: json:"target_id" validate:"required,lte=64"
+  string target_id = 2;
+  // 群组名称
+  // @gotags: json:"name" validate:"required,lte=64"
+  string name = 3;
+  // wechat url
+  // @gotags: json:"url" validate:"required,lte=64"
+  string url = 4;
+  // robot 密钥信息
+  // @gotags: json:"secret" validate:"required,lte=64"
+  string secret = 5;
+  // 描述信息
+  // @gotags: json:"description"
+  string description = 6;
+}
+
+message DeletePolicyRequest {
+  // 用户账号id
+  // @gotags: json:"policy_ids" validate:"required,lte=60"
+  repeated string policy_ids = 2;
+}

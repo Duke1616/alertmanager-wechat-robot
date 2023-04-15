@@ -63,7 +63,7 @@ func (s *service) QueryTarget(ctx context.Context, req *target.QueryTargetReques
 	// 循环插入数据
 	for resp.Next(ctx) {
 		ins := target.NewDefaultTarget()
-		if err := resp.Decode(ins); err != nil {
+		if err = resp.Decode(ins); err != nil {
 			return nil, exception.NewInternalServerError("decode target error, error is %s", err)
 		}
 		set.Add(ins)

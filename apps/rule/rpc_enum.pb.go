@@ -9,24 +9,24 @@ import (
 	"strings"
 )
 
-// ParseDESCRIBE_BYFromString Parse DESCRIBE_BY from string
-func ParseDESCRIBE_BYFromString(str string) (DESCRIBE_BY, error) {
+// ParseSYNC_MODEFromString Parse SYNC_MODE from string
+func ParseSYNC_MODEFromString(str string) (SYNC_MODE, error) {
 	key := strings.Trim(string(str), `"`)
-	v, ok := DESCRIBE_BY_value[strings.ToUpper(key)]
+	v, ok := SYNC_MODE_value[strings.ToUpper(key)]
 	if !ok {
-		return 0, fmt.Errorf("unknown DESCRIBE_BY: %s", str)
+		return 0, fmt.Errorf("unknown SYNC_MODE: %s", str)
 	}
 
-	return DESCRIBE_BY(v), nil
+	return SYNC_MODE(v), nil
 }
 
 // Equal type compare
-func (t DESCRIBE_BY) Equal(target DESCRIBE_BY) bool {
+func (t SYNC_MODE) Equal(target SYNC_MODE) bool {
 	return t == target
 }
 
 // IsIn todo
-func (t DESCRIBE_BY) IsIn(targets ...DESCRIBE_BY) bool {
+func (t SYNC_MODE) IsIn(targets ...SYNC_MODE) bool {
 	for _, target := range targets {
 		if t.Equal(target) {
 			return true
@@ -37,7 +37,7 @@ func (t DESCRIBE_BY) IsIn(targets ...DESCRIBE_BY) bool {
 }
 
 // MarshalJSON todo
-func (t DESCRIBE_BY) MarshalJSON() ([]byte, error) {
+func (t SYNC_MODE) MarshalJSON() ([]byte, error) {
 	b := bytes.NewBufferString(`"`)
 	b.WriteString(strings.ToUpper(t.String()))
 	b.WriteString(`"`)
@@ -45,8 +45,8 @@ func (t DESCRIBE_BY) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON todo
-func (t *DESCRIBE_BY) UnmarshalJSON(b []byte) error {
-	ins, err := ParseDESCRIBE_BYFromString(string(b))
+func (t *SYNC_MODE) UnmarshalJSON(b []byte) error {
+	ins, err := ParseSYNC_MODEFromString(string(b))
 	if err != nil {
 		return err
 	}

@@ -2,75 +2,60 @@ syntax = "proto3";
 package robot.rule;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/rule";
 
-import "apps/rule/pb/rule.proto";
 import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
-import "common/pb/github.com/infraboard/mcube/pb/request/request.proto";
+import "apps/rule/pb/rule.proto";
+import public "google/protobuf/Empty.proto";
 
 service RPC {
-  // 创建规则信息
-  rpc CreateRule(CreateRuleRequest) returns(Rule);
-  // 查看规则信息
-  rpc DescribeRule(DescribeRuleRequest) returns(Rule);
-  // 查询群组下的所有规则
+  // 同步告警规则
+  rpc SyncRule(SyncRuleRequest) returns(google.protobuf.Empty);
+  // 查询告警规则
   rpc QueryRule(QueryRuleRequest) returns(RuleSet);
-  // 删除群组规则
-  rpc DeleteRule(DeleteRuleRequest) returns(RuleSet);
-  // 更新群组规则
-  rpc UpdateRule(UpdateDeleteRequest) returns(Rule);
+  // 查询告警分组
+  rpc QueryGroup(QueryGroupRequest) returns(GroupSet);
 }
 
-enum DESCRIBE_BY {
-  // 通过rule id
-  id = 0;
+enum SYNC_MODE {
+  ALL = 0;
+  GROUP = 1;
+  RULE = 2;
 }
 
-message DescribeRuleRequest {
-  // 查询详情的方式
-  // @gotags: json:"describe_by"
-  DESCRIBE_BY describe_by = 1;
-  // 服务客户端Id
-  // @gotags: json:"id"
-  string id = 2;
+message SyncRuleRequest {
+  // 同步模式
+  // @gotags: json:"sync_mode"
+  SYNC_MODE sync_mode = 1;
+  // 根据组进行同步
+  // @gotags: json:"group_name"
+  string group_name = 2;
+  // 根据组进行同步
+  // @gotags: json:"rule_name"
+  string rule_name = 3;
 }
 
 message QueryRuleRequest {
   // 分页参数
   // @gotags: json:"page"
   infraboard.mcube.page.PageRequest page = 1;
-  // rule相关target id
-  // @gotags: json:"target_id"
-  string target_id = 2;
-  // rule相关target id
-  // @gotags: json:"label_type"
-  LABEL_TYPE label_type = 3;
-  // rule相关target id
-  // @gotags: json:"rule_ids"
-  repeated string rule_ids = 4;
+  // 告警名称
+  // @gotags: json:"name"
+  string name = 2;
+  // 告警分组
+  // @gotags: json:"group_name"
+  string group_name = 3;
+  // 告警级别
+  // @gotags: json:"level"
+  string level = 4;
+  // 告警服务
+  // @gotags: json:"service_name"
+  string service_name = 5;
 }
 
-message UpdateDeleteRequest {
-  // 更新模式
-  // @gotags: json:"update_mode"
-  infraboard.mcube.request.UpdateMode update_mode = 1;
-  // 群组id
-  // @gotags: json:"target_id" validate:"required,lte=64"
-  string target_id = 2;
-  // 群组名称
-  // @gotags: json:"name" validate:"required,lte=64"
-  string name = 3;
-  // wechat url
-  // @gotags: json:"url" validate:"required,lte=64"
-  string url = 4;
-  // robot 密钥信息
-  // @gotags: json:"secret" validate:"required,lte=64"
-  string secret = 5;
-  // 描述信息
-  // @gotags: json:"description"
-  string description = 6;
-}
-
-message DeleteRuleRequest {
-  // 用户账号id
-  // @gotags: json:"rule_ids" validate:"required,lte=60"
-  repeated string rule_ids = 2;
+message QueryGroupRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // 告警名称
+  // @gotags: json:"name"
+  string name = 2;
 }

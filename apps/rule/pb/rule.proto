@@ -1,38 +1,85 @@
 syntax = "proto3";
 package robot.rule;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/rule";
+import public "google/protobuf/timestamp.proto";
 
-enum ACTIVE {
-  NEWS = 0;
-  // 状态转换
-  STATUS_TRANS = 2;
-  // 丢弃报警
-  DROP = 1;
+message Rules {
+  // 状态
+  // @gotags: bson:"status" json:"status"
+  string status = 1;
+  // 数据
+  // @gotags: bson:"data" json:"data"
+  Groups data = 2;
 }
 
-enum LABEL_TYPE {
-  // 组策略标签匹配
-  GROUP = 0;
-  // 全局配置标签匹配
-  COMMON = 1;
+message Groups {
+  // 组ID
+  // @gotags: bson:"groups" json:"groups"
+  repeated Group groups = 1;
+}
+
+message Group {
+  // 组ID
+  // @gotags: bson:"_id" json:"id" validate:"required,lte=64"
+  string id = 1;
+  // 组名称
+  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  string name = 2;
+  // 最后更新时间
+  // @gotags: bson:"last_evaluation" json:"lastEvaluation"
+  string last_evaluation = 3;
+  // 报警来源类型
+  // @gotags: bson:"type" json:"type"
+  string type = 4;
+  // 组使用的配置文件
+  // @gotags: bson:"file" json:"file"
+  string file = 5;
+  // 组报警间隔时间
+  // @gotags: bson:"interval" json:"interval"
+  uint64 interval = 6;
+  // 组内报警规则
+  // @gotags: bson:"-" json:"rules"
+  repeated Rule rules = 7;
+}
+
+
+message GroupSet {
+  // 总数量
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // 数据
+  // @gotags: bson:"items" json:"items"
+  repeated Group items = 2;
 }
 
 message Rule {
-  // rule ID
-  // @gotags: bson:"_id" json:"id"
+  // 规则ID
+  // @gotags: bson:"_id" json:"id" validate:"required,lte=64"
   string id = 1;
-  // 是否开启
-  // @gotags: bson:"enabled" json:"enabled"
-  bool enabled = 2;
-  // 创建时间
-  // @gotags: bson:"create_at" json:"create_at"
-  int64 create_at = 3;
-  // 创建时间
-  // @gotags: bson:"update_at" json:"update_at"
-  int64 update_at = 4;
-  // 创建信息
-  // @gotags: bson:"spec" json:"spec"
-  CreateRuleRequest spec = 5;
+  // 组id
+  // @gotags: bson:"group_id" json:"group_id"
+  string group_id = 2;
+  // 组id
+  // @gotags: bson:"group_name" json:"group_name"
+  string group_name = 3;
+  // 规则名称
+  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  string name = 4;
+  // 规则查询语句
+  // @gotags: bson:"query" json:"query"
+  string query = 5;
+  // 规则查询语句
+  // @gotags: bson:"level" json:"level"
+  string level = 6;
+  // 规则查询语句
+  // @gotags: bson:"service_name" json:"service_name"
+  string service_name = 7;
+  // 规则标签
+  // @gotags: bson:"labels" json:"labels"
+  map<string, string> labels = 8;
+  // 规则注释
+  // @gotags: bson:"annotations" json:"annotations"
+  map<string, string> annotations = 9;
 }
 
 message RuleSet {
@@ -42,35 +89,4 @@ message RuleSet {
   // 数据
   // @gotags: bson:"items" json:"items"
   repeated Rule items = 2;
-}
-
-message CreateRuleRequest {
-  // 关联target ID
-  // @gotags: bson:"target_id" json:"target_id" validate:"required,lte=64"
-  string target_id = 1;
-  // 标签类型
-  // @gotags: bson:"label_type" json:"label_type"
-  LABEL_TYPE label_type = 2;
-  // 匹配标签
-  // @gotags: bson:"label" json:"label" validate:"required,lte=64"
-  string label = 3;
-  // 匹配值
-  // @gotags: bson:"value" json:"value"
-  repeated string value = 4;
-  // 动作
-  // @gotags: bson:"active" json:"active"
-  ACTIVE active = 5;
-  // @其他人
-  // @gotags: bson:"mention" json:"mention"
-  Mention mention = 6;
-}
-
-// 提到的人
-message Mention {
-  // 是否@所有人
-  // @gotags: bson:"all" json:"all"
-  bool all = 1;
-  // @指定的人
-  // @gotags: bson:"mobiles" json:"mobiles"
-  repeated string mobiles = 2;
 }
