@@ -1,12 +1,19 @@
 package alert
 
 import (
+	"github.com/go-playground/validator/v10"
+	"github.com/infraboard/mcube/http/request"
+	"net/http"
 	"strings"
 	"time"
 )
 
 const (
 	AppName = "alert"
+)
+
+var (
+	validate = validator.New()
 )
 
 func (req *SaveAlertRequest) AlertInformationS() []interface{} {
@@ -35,4 +42,45 @@ func (req *SaveAlertRequest) AlertInformationS() []interface{} {
 		ais = append(ais, information)
 	}
 	return ais
+}
+
+func NewQueryAlertRequestFromHTTP(r *http.Request) *QueryAlertRequest {
+	page := request.NewPageRequestFromHTTP(r)
+
+	qs := r.URL.Query()
+	req := NewDefaultQueryAlertRequest()
+	req.Type = qs.Get("type")
+	req.Level = qs.Get("level")
+	req.ServiceName = qs.Get("service_name")
+	req.TargetName = qs.Get("target_name")
+	req.Others = qs.Get("others")
+	req.InstanceName = qs.Get("instance_name")
+	req.AlertName = qs.Get("alert_name")
+	req.Page = page
+	return req
+}
+
+func NewDefaultQueryAlertRequest() *QueryAlertRequest {
+	return &QueryAlertRequest{
+		Page: request.NewDefaultPageRequest(),
+	}
+}
+
+func (req *QueryAlertRequest) Validate() error {
+	return validate.Struct(req)
+}
+
+func NewAlertInformationSet() *AlertInformationSet {
+	return &AlertInformationSet{
+		Items: []*AlertInformation{},
+	}
+}
+
+func (s *AlertInformationSet) Add(item *AlertInformation) {
+	s.Total++
+	s.Items = append(s.Items, item)
+}
+
+func NewDefaultAlertInformation() *AlertInformation {
+	return &AlertInformation{}
 }

@@ -25,3 +25,18 @@ func NewDefaultQueryGroupRequest() *QueryGroupRequest {
 		Page: request.NewDefaultPageRequest(),
 	}
 }
+
+func NewGroupSet() *GroupSet {
+	return &GroupSet{
+		Items: []*Group{},
+	}
+}
+
+func (s *GroupSet) Add(item *Group) {
+	s.Total++
+	s.Items = append(s.Items, item)
+}
+
+func NewDefaultGroup() *Group {
+	return &Group{}
+}

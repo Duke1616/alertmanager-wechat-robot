@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type RPCClient interface {
 	// 保存报警信息
 	SaveAlertInformation(ctx context.Context, in *SaveAlertRequest, opts ...grpc.CallOption) (*SaveAlertResponse, error)
+	// 查询报警历史信息
+	QueryAlertInformation(ctx context.Context, in *QueryAlertRequest, opts ...grpc.CallOption) (*AlertInformationSet, error)
 }
 
 type rPCClient struct {
@@ -43,12 +45,23 @@ func (c *rPCClient) SaveAlertInformation(ctx context.Context, in *SaveAlertReque
 	return out, nil
 }
 
+func (c *rPCClient) QueryAlertInformation(ctx context.Context, in *QueryAlertRequest, opts ...grpc.CallOption) (*AlertInformationSet, error) {
+	out := new(AlertInformationSet)
+	err := c.cc.Invoke(ctx, "/robot.alert.RPC/QueryAlertInformation", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCServer is the server API for RPC service.
 // All implementations must embed UnimplementedRPCServer
 // for forward compatibility
 type RPCServer interface {
 	// 保存报警信息
 	SaveAlertInformation(context.Context, *SaveAlertRequest) (*SaveAlertResponse, error)
+	// 查询报警历史信息
+	QueryAlertInformation(context.Context, *QueryAlertRequest) (*AlertInformationSet, error)
 	mustEmbedUnimplementedRPCServer()
 }
 
@@ -58,6 +71,9 @@ type UnimplementedRPCServer struct {
 
 func (UnimplementedRPCServer) SaveAlertInformation(context.Context, *SaveAlertRequest) (*SaveAlertResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveAlertInformation not implemented")
+}
+func (UnimplementedRPCServer) QueryAlertInformation(context.Context, *QueryAlertRequest) (*AlertInformationSet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAlertInformation not implemented")
 }
 func (UnimplementedRPCServer) mustEmbedUnimplementedRPCServer() {}
 
@@ -90,6 +106,24 @@ func _RPC_SaveAlertInformation_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_QueryAlertInformation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAlertRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).QueryAlertInformation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.alert.RPC/QueryAlertInformation",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).QueryAlertInformation(ctx, req.(*QueryAlertRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPC_ServiceDesc is the grpc.ServiceDesc for RPC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -100,6 +134,10 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveAlertInformation",
 			Handler:    _RPC_SaveAlertInformation_Handler,
+		},
+		{
+			MethodName: "QueryAlertInformation",
+			Handler:    _RPC_QueryAlertInformation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

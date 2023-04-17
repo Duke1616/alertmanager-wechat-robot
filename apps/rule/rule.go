@@ -28,3 +28,18 @@ func NewDefaultQueryRuleRequest() *QueryRuleRequest {
 		Page: request.NewDefaultPageRequest(),
 	}
 }
+
+func NewRuleSet() *RuleSet {
+	return &RuleSet{
+		Items: []*Rule{},
+	}
+}
+
+func (s *RuleSet) Add(item *Rule) {
+	s.Total++
+	s.Items = append(s.Items, item)
+}
+
+func NewDefaultRule() *Rule {
+	return &Rule{}
+}

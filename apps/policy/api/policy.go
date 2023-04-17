@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
+	"github.com/Duke1616/alertmanager-wechat-robot/utils"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/infraboard/mcube/http/restful/response"
 )
@@ -19,7 +20,7 @@ func (h *handler) CreatePolicy(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, set)
+	utils.Success(w, set, "创建策略成功")
 }
 
 func (h *handler) DescribePolicy(r *restful.Request, w *restful.Response) {
@@ -31,7 +32,7 @@ func (h *handler) DescribePolicy(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, ins)
+	utils.Success(w, ins, "查询策略详情成功")
 }
 
 func (h *handler) QueryPolicy(r *restful.Request, w *restful.Response) {
@@ -42,7 +43,7 @@ func (h *handler) QueryPolicy(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, ins)
+	utils.Success(w, ins, "获取策略成功")
 }
 
 func (h *handler) DeletePolicy(r *restful.Request, w *restful.Response) {
@@ -54,5 +55,5 @@ func (h *handler) DeletePolicy(r *restful.Request, w *restful.Response) {
 		response.Failed(w, err)
 		return
 	}
-	response.Success(w, set)
+	utils.Success(w, set, "删除策略成功")
 }

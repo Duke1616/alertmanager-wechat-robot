@@ -32,7 +32,7 @@ func (h *handler) DescribeUser(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, ins)
+	utils.Success(w, ins, "查看用户详情成功")
 }
 
 func (h *handler) QueryUser(r *restful.Request, w *restful.Response) {
@@ -43,7 +43,7 @@ func (h *handler) QueryUser(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, ins)
+	utils.Success(w, ins, "查询用户成功")
 }
 
 func (h *handler) PutUser(r *restful.Request, w *restful.Response) {
@@ -58,7 +58,7 @@ func (h *handler) PutUser(r *restful.Request, w *restful.Response) {
 		response.Failed(w, err)
 		return
 	}
-	response.Success(w, set)
+	utils.Success(w, set, "修改用户成功")
 }
 
 func (h *handler) PatchUser(r *restful.Request, w *restful.Response) {
@@ -73,7 +73,7 @@ func (h *handler) PatchUser(r *restful.Request, w *restful.Response) {
 		response.Failed(w, err)
 		return
 	}
-	response.Success(w, set)
+	utils.Success(w, set, "修改用户成功")
 }
 
 func (h *handler) DeleteUser(r *restful.Request, w *restful.Response) {
@@ -85,5 +85,5 @@ func (h *handler) DeleteUser(r *restful.Request, w *restful.Response) {
 		response.Failed(w, err)
 		return
 	}
-	response.Success(w, set)
+	utils.Success(w, set, "删除用户成功")
 }

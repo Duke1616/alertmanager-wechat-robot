@@ -2,6 +2,7 @@ syntax = "proto3";
 package robot.alert;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/alert";
 
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
 import public "google/protobuf/timestamp.proto";
 import public "google/protobuf/Empty.proto";
 import "apps/policy/pb/policy.proto";
@@ -9,6 +10,8 @@ import "apps/policy/pb/policy.proto";
 service RPC {
   // 保存报警信息
   rpc SaveAlertInformation(SaveAlertRequest) returns(SaveAlertResponse);
+  // 查询报警历史信息
+  rpc QueryAlertInformation(QueryAlertRequest) returns(AlertInformationSet);
 }
 
 message AlertInformation {
@@ -48,6 +51,16 @@ message AlertInformation {
   // 告警通知时间
   // @gotags: bson:"notification_at" json:"notification_at"
   int64 notification_at = 12;
+}
+
+
+message AlertInformationSet {
+  // 总数量
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // 数据
+  // @gotags: bson:"items" json:"items"
+  repeated AlertInformation items = 2;
 }
 
 message SaveAlertRequest {
@@ -90,4 +103,32 @@ message Alert {
   // 可用于识别警报的指纹
   // @gotags: bson:"fingerprint" json:"fingerprint"
   optional string fingerprint = 7;
+}
+
+
+message QueryAlertRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // 告警类型
+  // @gotags: json:"type"
+  string type = 2;
+  // 告警服务
+  // @gotags: json:"service_name"
+  string service_name = 3;
+  // 告警级别
+  // @gotags: json:"level"
+  string level = 4;
+  // 告警实例
+  // @gotags: json:"instance_name"
+  string instance_name = 5;
+  // 告警群组
+  // @gotags: json:"target_name"
+  string target_name = 6;
+  // 告警通知人
+  // @gotags: json:"others"
+  string others = 7;
+  // 告警通知人
+  // @gotags: json:"alert_name"
+  string alert_name = 8;
 }

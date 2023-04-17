@@ -19,6 +19,7 @@ type service struct {
 	rule  *mongo.Collection
 	group *mongo.Collection
 
+	url string
 	log logger.Logger
 	rule.UnimplementedRPCServer
 }
@@ -30,6 +31,9 @@ func (s *service) Config() error {
 	if err != nil {
 		return err
 	}
+
+	// vmalert 访问地址
+	s.url = conf.C().Vmalert.GetVmAlertUrl()
 
 	s.rule = db.Collection(s.Name())
 	s.group = db.Collection("group")

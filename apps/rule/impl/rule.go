@@ -12,7 +12,7 @@ import (
 func (s *service) SyncRule(ctx context.Context, req *rule.SyncRuleRequest) (*rule.Empty, error) {
 	rules := rule.NewRules()
 
-	resp, err := http.Get("")
+	resp, err := http.Get(s.url)
 	if err != nil {
 		return nil, err
 	}
@@ -43,9 +43,67 @@ func (s *service) SyncRule(ctx context.Context, req *rule.SyncRuleRequest) (*rul
 }
 
 func (s *service) QueryRule(ctx context.Context, req *rule.QueryRuleRequest) (*rule.RuleSet, error) {
-	return nil, nil
+	query, err := newQueryRuleRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	s.log.Debugf("query rule filter: %s", query.FindFilter())
+	resp, err := s.rule.Find(ctx, query.FindFilter(), query.FindOptions())
+
+	if err != nil {
+		return nil, exception.NewInternalServerError("find rule error, error is %s", err)
+	}
+
+	set := rule.NewRuleSet()
+	// 循环插入数据
+	for resp.Next(ctx) {
+		ins := rule.NewDefaultRule()
+		if err = resp.Decode(ins); err != nil {
+			return nil, exception.NewInternalServerError("decode rule error, error is %s", err)
+		}
+		set.Add(ins)
+	}
+
+	// 计算数量
+	count, err := s.rule.CountDocuments(ctx, query.FindFilter())
+	if err != nil {
+		return nil, exception.NewInternalServerError("get rule count error, error is %s", err)
+	}
+	set.Total = count
+
+	return set, nil
 }
 
 func (s *service) QueryGroup(ctx context.Context, req *rule.QueryGroupRequest) (*rule.GroupSet, error) {
-	return nil, nil
+	query, err := newQueryGroupRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	s.log.Debugf("query group filter: %s", query.FindFilter())
+	resp, err := s.group.Find(ctx, query.FindFilter(), query.FindOptions())
+
+	if err != nil {
+		return nil, exception.NewInternalServerError("find group error, error is %s", err)
+	}
+
+	set := rule.NewGroupSet()
+	// 循环插入数据
+	for resp.Next(ctx) {
+		ins := rule.NewDefaultGroup()
+		if err = resp.Decode(ins); err != nil {
+			return nil, exception.NewInternalServerError("decode rule error, error is %s", err)
+		}
+		set.Add(ins)
+	}
+
+	// 计算数量
+	count, err := s.group.CountDocuments(ctx, query.FindFilter())
+	if err != nil {
+		return nil, exception.NewInternalServerError("get group count error, error is %s", err)
+	}
+	set.Total = count
+
+	return set, nil
 }
