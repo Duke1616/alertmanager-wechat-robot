@@ -3,6 +3,7 @@ package impl
 import (
 	"context"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	"github.com/infraboard/mcube/exception"
 	"github.com/infraboard/mcube/pb/request"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,7 +15,7 @@ func (s *service) CreateTarget(ctx context.Context, req *target.CreateTargetRequ
 	if err != nil {
 		return nil, exception.NewBadRequest(err.Error())
 	}
-	if _, err := s.col.InsertOne(ctx, t); err != nil {
+	if _, err = s.col.InsertOne(ctx, t); err != nil {
 		return nil, exception.NewInternalServerError("inserted a target document error, %s", err)
 	}
 
@@ -103,12 +104,24 @@ func (s *service) UpdateTarget(ctx context.Context, req *target.UpdateTargetRequ
 }
 
 func (s *service) DeleteTarget(ctx context.Context, req *target.DeleteTargetRequest) (*target.TargetSet, error) {
-	// 判断这些要删除的用户是否存在
+	// 判断这些要删除的群组是否存在
 	queryReq := target.NewDefaultQueryTargetRequest()
 	queryReq.TargetIds = req.TargetIds
 	set, err := s.QueryTarget(ctx, queryReq)
 	if err != nil {
 		return nil, err
+	}
+
+	// 判断删除用户是否绑定分组
+	queryUser := user.NewDefaultQueryUserRequest()
+	queryUser.TargetIds = req.TargetIds
+	uSet, err := s.user.QueryUser(ctx, queryUser)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(uSet.Items) > 0 {
+		return nil, exception.NewBadRequest("组内 %s 存在绑定用户，请先删除用户： %s", set.Items[0].Spec.Name, uSet.Items[0].Spec.Name)
 	}
 
 	var noExist []string

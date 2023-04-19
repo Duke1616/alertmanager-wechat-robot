@@ -59,7 +59,7 @@ func NewQueryPolicyRequestFromHTTP(r *http.Request) *QueryPolicyRequest {
 
 	qs := r.URL.Query()
 	req := NewDefaultQueryPolicyRequest()
-	req.TargetId = qs.Get("target_id")
+	req.TargetName = qs.Get("target_name")
 
 	//lt := qs.Get("label_type")
 	//req.LabelType, _ = ParseLABEL_TYPEFromString(lt)
@@ -130,10 +130,10 @@ func (i *Policy) Patch(req *UpdatePolicyRequest) error {
 	return nil
 }
 
-func NewQueryPolicyRequest(targetId string) *QueryPolicyRequest {
+func NewQueryPolicyRequestByName(targetName string) *QueryPolicyRequest {
 	return &QueryPolicyRequest{
-		Page:     request.NewPageRequest(100, 1),
-		TargetId: targetId,
+		Page:       request.NewPageRequest(100, 1),
+		TargetName: targetName,
 	}
 }
 

@@ -38,10 +38,9 @@ func (r *queryUserRequest) FindOptions() *options.FindOptions {
 func (r *queryUserRequest) FindFilter() bson.M {
 	filter := bson.M{}
 
-	if len(r.TargetNames) > 1 {
-		filter["spec.target_names"] = bson.M{"$in": r.TargetNames}
+	if len(r.TargetIds) > 0 {
+		filter["spec.target_ids"] = bson.M{"$in": r.TargetIds}
 	}
-
 	if len(r.UserIds) > 0 {
 		filter["_id"] = bson.M{"$in": r.UserIds}
 	}

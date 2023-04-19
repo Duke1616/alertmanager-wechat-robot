@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
@@ -24,6 +25,8 @@ type service struct {
 	col *mongo.Collection
 	log logger.Logger
 	target.UnimplementedRPCServer
+
+	user user.RPCServer
 }
 
 func (s *service) Config() error {
@@ -37,7 +40,7 @@ func (s *service) Config() error {
 	indexes := []mongo.IndexModel{
 		{
 			Keys: bsonx.Doc{
-				{Key: "name", Value: bsonx.Int32(-1)},
+				{Key: "spec.name", Value: bsonx.Int32(-1)},
 			},
 			Options: options.Index().SetUnique(true),
 		},
@@ -51,6 +54,7 @@ func (s *service) Config() error {
 	s.col = dc
 
 	s.log = zap.L().Named(s.Name())
+	s.user = app.GetGrpcApp(user.AppName).(user.RPCServer)
 	return nil
 }
 

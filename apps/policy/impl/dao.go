@@ -39,11 +39,11 @@ func (r *queryPolicyRequest) FindOptions() *options.FindOptions {
 func (r *queryPolicyRequest) FindFilter() bson.M {
 	filter := bson.M{}
 
-	if r.TargetId != "" {
-		filter["spec.target_id"] = r.TargetId
+	if r.TargetName != "" {
+		filter["target_name"] = r.TargetName
 	}
 
-	if len(r.PolicyIds) > 1 {
+	if len(r.PolicyIds) > 0 {
 		filter["_id"] = bson.M{"$in": r.PolicyIds}
 	}
 

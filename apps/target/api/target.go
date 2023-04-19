@@ -43,7 +43,7 @@ func (h *handler) QueryTarget(r *restful.Request, w *restful.Response) {
 		return
 	}
 
-	response.Success(w, ins)
+	utils.Success(w, ins, "查询群组信息成功")
 }
 
 func (h *handler) PutTarget(r *restful.Request, w *restful.Response) {

@@ -38,8 +38,8 @@ message QueryPolicyRequest {
   // @gotags: json:"page"
   infraboard.mcube.page.PageRequest page = 1;
   // target_id
-  // @gotags: json:"target_id"
-  string target_id = 2;
+  // @gotags: json:"target_name"
+  string target_name = 2;
   // policy 的标签类型
   // @gotags: json:"label_type"
   LABEL_TYPE label_type = 3;

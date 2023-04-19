@@ -64,7 +64,7 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
 		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
 		Param(ws.QueryParameter("user_ids", "查询user_ids的用户，以逗号分割传递").DataType("string")).
-		Param(ws.QueryParameter("target_names", "查询存在target中的用户，以逗号分割传递").DataType("string")).
+		Param(ws.QueryParameter("target_ids", "查询群组里面的关联人员").DataType("string")).
 		Writes(user.UserSet{}).
 		Returns(200, "OK", user.UserSet{}).
 		Returns(404, "Not Found", nil))

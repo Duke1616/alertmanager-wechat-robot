@@ -193,5 +193,5 @@ func newDefaultVmAlert() *vmalert {
 }
 
 func (v *vmalert) GetVmAlertUrl() string {
-	return fmt.Sprintf("%s://%s:%s", v.Schema, v.Host, v.Port)
+	return fmt.Sprintf("%s://%s:%s/%s", v.Schema, v.Host, v.Port, "api/v1/rules")
 }

@@ -7,6 +7,23 @@ import (
 )
 
 func (s *service) SaveAlertInformation(ctx context.Context, req *alert.SaveAlertRequest) (*alert.SaveAlertResponse, error) {
+	// 查询用户名称
+	//var users []string
+	//
+	//for _, wechatId := range req.Mention.Username {
+	//	s.log.Info(wechatId)
+	//	u, err := s.user.DescribeUser(ctx, user.NewDescribeUserRequestByWechatId(wechatId))
+	//	if exception.IsNotFoundError(err) == true {
+	//		s.log.Errorf("通过wechat_id: %s查询用户失败", wechatId)
+	//	}
+	//	if err != nil {
+	//		s.log.Errorf("通过wechat_id: %s查询用户失败", wechatId)
+	//		return nil, err
+	//	}
+	//	users = append(users, u.Spec.Name)
+	//}
+
+	// 组合数据
 	ais := req.AlertInformationS()
 
 	if _, err := s.col.InsertMany(ctx, ais); err != nil {

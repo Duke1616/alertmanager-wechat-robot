@@ -10,17 +10,23 @@ import (
 )
 
 func (s *service) CreatePolicy(ctx context.Context, req *policy.CreatePolicyRequest) (*policy.Policy, error) {
-	_, err := s.target.DescribeTarget(ctx, target.NewDescribeTargetRequestById(req.TargetId))
-	if err != nil {
-		return nil, err
-	}
-
 	r, err := policy.NewPolicy(req)
 
 	if err != nil {
 		return nil, exception.NewBadRequest(err.Error())
 	}
-	if _, err := s.col.InsertOne(ctx, r); err != nil {
+
+	if req.Active == policy.ACTIVE_NEWS {
+		t, err := s.target.DescribeTarget(ctx, target.NewDescribeTargetRequestById(req.TargetId))
+		if err != nil {
+			return nil, err
+		}
+
+		r.TargetName = t.Spec.Name
+		//r.Spec.Mention.Username =
+	}
+
+	if _, err = s.col.InsertOne(ctx, r); err != nil {
 		return nil, exception.NewInternalServerError("inserted a policy document error, %s", err)
 	}
 

@@ -20,6 +20,7 @@ type service struct {
 	col *mongo.Collection
 	log logger.Logger
 	policy.UnimplementedRPCServer
+
 	target target.RPCServer
 }
 

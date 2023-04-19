@@ -70,10 +70,10 @@ func NewQueryTargetRequestFromHTTP(r *http.Request) *QueryTargetRequest {
 
 	tids := qs.Get("target_ids")
 	if tids != "" {
-		//index := strings.Index(tids, ",")
-		//if index == -1 {
-		//	tids += ","
-		//}
+		index := strings.Index(tids, ",")
+		if index == -1 {
+			tids += ","
+		}
 		req.TargetIds = strings.Split(tids, ",")
 	}
 

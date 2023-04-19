@@ -30,9 +30,12 @@ message Policy {
   // 创建时间
   // @gotags: bson:"update_at" json:"update_at"
   int64 update_at = 4;
+  // 关联target_name
+  // @gotags: bson:"target_name" json:"target_name" validate:"required,lte=64"
+  string target_name = 5;
   // 创建信息
   // @gotags: bson:"spec" json:"spec"
-  CreatePolicyRequest spec = 5;
+  CreatePolicyRequest spec = 6;
 }
 
 message PolicySet {
@@ -45,24 +48,28 @@ message PolicySet {
 }
 
 message CreatePolicyRequest {
-  // 关联target ID
+  // 策略名称
+  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  string name = 1;
+  // 关联target_name
   // @gotags: bson:"target_id" json:"target_id" validate:"required,lte=64"
-  string target_id = 1;
+  string target_id = 2;
   // 标签类型
   // @gotags: bson:"label_type" json:"label_type"
-  LABEL_TYPE label_type = 2;
+  LABEL_TYPE label_type = 3;
   // 匹配标签
   // @gotags: bson:"label" json:"label" validate:"required,lte=64"
-  string label = 3;
+  string label = 4;
   // 匹配值
-  // @gotags: bson:"value" json:"value"
-  repeated string value = 4;
+  // @gotags: bson:"value" json:"value"lsGaofei123@15046094252
+
+  repeated string value = 5;
   // 动作
   // @gotags: bson:"active" json:"active"
-  ACTIVE active = 5;
+  ACTIVE active = 6;
   // @其他人
   // @gotags: bson:"mention" json:"mention"
-  Mention mention = 6;
+  Mention mention = 7;
 }
 
 // 提到的人
@@ -71,6 +78,6 @@ message Mention {
   // @gotags: bson:"all" json:"all"
   bool all = 1;
   // @指定的人
-  // @gotags: bson:"mobiles" json:"mobiles"
-  repeated string mobiles = 2;
+  // @gotags: bson:"username" json:"username"
+  repeated string username = 2;
 }

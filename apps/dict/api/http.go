@@ -35,7 +35,7 @@ func (h *handler) Version() string {
 func (h *handler) Registry(ws *restful.WebService) {
 	tags := []string{"枚举字典"}
 	ws.Route(ws.GET("/rule_label_type").To(h.RuleLabelType).
-		Doc("策略枚举标签").
+		Doc("策略标签枚举").
 		Metadata(label.Resource, dict.AppName).
 		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
@@ -43,12 +43,20 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Returns(200, "OK", dict.PolicyLabelType))
 
 	ws.Route(ws.GET("/rule_active").To(h.RuleActive).
-		Doc("策略枚举动作").
+		Doc("策略动作枚举").
 		Metadata(label.Resource, dict.AppName).
 		Metadata(label.Auth, false).
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(dict.PolicyActive).
 		Returns(200, "OK", dict.PolicyActive))
+
+	ws.Route(ws.GET("/user_type").To(h.UserType).
+		Doc("用户类型枚举").
+		Metadata(label.Resource, dict.AppName).
+		Metadata(label.Auth, false).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(dict.UserType).
+		Returns(200, "OK", dict.UserType))
 }
 
 func init() {

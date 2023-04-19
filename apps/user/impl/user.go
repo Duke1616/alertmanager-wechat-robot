@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	"github.com/infraboard/mcube/exception"
 	"github.com/infraboard/mcube/pb/request"
@@ -20,7 +21,21 @@ func (s *service) CreateUser(ctx context.Context, req *user.CreateUserRequest) (
 		return nil, err
 	}
 
-	if _, err := s.col.InsertOne(ctx, u); err != nil {
+	queryReq := target.NewDefaultQueryTargetRequest()
+	queryReq.TargetIds = req.TargetIds
+	tSet, err := s.target.QueryTarget(ctx, queryReq)
+	if err != nil {
+		return nil, err
+	}
+
+	var ts []string
+	for _, v := range tSet.Items {
+		ts = append(ts, v.Spec.Name)
+	}
+
+	u.TargetNames = ts
+
+	if _, err = s.col.InsertOne(ctx, u); err != nil {
 		return nil, exception.NewInternalServerError("inserted a user document error, %s", err)
 	}
 
@@ -139,7 +154,7 @@ func (s *service) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) (
 
 func (s *service) DeleteUser(ctx context.Context, req *user.DeleteUserRequest) (*user.UserSet, error) {
 	// 判断这些要删除的用户是否存在
-	queryReq := user.NewDefaultQueryTargetRequest()
+	queryReq := user.NewDefaultQueryUserRequest()
 	queryReq.UserIds = req.UserIds
 	set, err := s.QueryUser(ctx, queryReq)
 	if err != nil {

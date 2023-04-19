@@ -59,21 +59,38 @@ func NewDescribeUserRequestByName(name string) *DescribeUserRequest {
 	}
 }
 
+// NewDescribeUserRequestByName 查询详情请求
+func NewDescribeUserRequestByWechatId(wechatId string) *DescribeUserRequest {
+	return &DescribeUserRequest{
+		DescribeBy: DESCRIBE_BY_WECHAT_ID,
+		Name:       wechatId,
+	}
+}
+
 func NewQueryUserRequestFromHTTP(r *http.Request) *QueryUserRequest {
 	page := request.NewPageRequestFromHTTP(r)
 
 	qs := r.URL.Query()
-	req := NewDefaultQueryTargetRequest()
+	req := NewDefaultQueryUserRequest()
 
 	//req.TargetId = qs.Get("target_id")
 
-	tnames := qs.Get("target_names")
-	if tnames != "" {
-		index := strings.Index(tnames, ",")
-		if index == -1 {
-			tnames += ","
-		}
-		req.TargetNames = strings.Split(tnames, ",")
+	//tnames := qs.Get("target_names")
+	//if tnames != "" {
+	//	index := strings.Index(tnames, ",")
+	//	if index == -1 {
+	//		tnames += ","
+	//	}
+	//	req.TargetNames = strings.Split(tnames, ",")
+	//}
+
+	tids := qs.Get("target_ids")
+	if tids != "" {
+		//index := strings.Index(tids, ",")
+		//if index == -1 {
+		//	tids += ","
+		//}
+		req.TargetNames = strings.Split(tids, ",")
 	}
 
 	uids := qs.Get("user_ids")
@@ -85,7 +102,7 @@ func NewQueryUserRequestFromHTTP(r *http.Request) *QueryUserRequest {
 	return req
 }
 
-func NewDefaultQueryTargetRequest() *QueryUserRequest {
+func NewDefaultQueryUserRequest() *QueryUserRequest {
 	return &QueryUserRequest{
 		Page: request.NewDefaultPageRequest(),
 	}
@@ -137,14 +154,14 @@ func NewValidate(user, password string) *ValidateRequest {
 
 func (i *User) Update(req *UpdateUserRequest) {
 	i.UpdateAt = time.Now().UnixMilli()
-	i.Profile = req.Profile
+	i.Spec.Profile = req.Profile
 	i.Spec.WechatId = req.WechatId
-	i.Spec.TargetNames = req.TargetNames
+	i.Spec.TargetIds = req.TargetIds
 }
 
 func (i *User) Patch(req *UpdateUserRequest) error {
 	i.UpdateAt = time.Now().UnixMicro()
-	err := mergo.MergeWithOverwrite(i.Profile, req.Profile)
+	err := mergo.MergeWithOverwrite(i.Spec.Profile, req.Profile)
 	if err != nil {
 		return err
 	}

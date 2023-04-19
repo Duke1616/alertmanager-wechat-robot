@@ -13,3 +13,7 @@ func (h *handler) RuleLabelType(r *restful.Request, w *restful.Response) {
 func (h *handler) RuleActive(r *restful.Request, w *restful.Response) {
 	utils.Success(w, dict.PolicyActive, "˙获取策略动作成功")
 }
+
+func (h *handler) UserType(r *restful.Request, w *restful.Response) {
+	utils.Success(w, dict.UserType, "˙获取用户类型成功")
+}

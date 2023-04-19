@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -24,6 +25,8 @@ type service struct {
 	col *mongo.Collection
 	log logger.Logger
 	user.UnimplementedRPCServer
+
+	target target.RPCServer
 }
 
 func (s *service) Config() error {
@@ -51,6 +54,7 @@ func (s *service) Config() error {
 	s.col = dc
 
 	s.log = zap.L().Named(s.Name())
+	s.target = app.GetGrpcApp(target.AppName).(target.RPCServer)
 	return nil
 }
 

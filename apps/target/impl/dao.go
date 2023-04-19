@@ -42,7 +42,7 @@ func (r *queryTargetRequest) FindFilter() bson.M {
 		filter["spec.url"] = r.Url
 	}
 
-	if len(r.TargetIds) > 1 {
+	if len(r.TargetIds) > 0 {
 		filter["_id"] = bson.M{"$in": r.TargetIds}
 	}
 

@@ -2,6 +2,7 @@ package impl
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/alert"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 
@@ -20,6 +21,7 @@ type service struct {
 	col *mongo.Collection
 	log logger.Logger
 	alert.UnimplementedRPCServer
+	user user.RPCServer
 }
 
 func (s *service) Config() error {
@@ -31,6 +33,7 @@ func (s *service) Config() error {
 
 	// 获取一个Collection对象, 通过Collection对象 来进行CRUD
 	s.col = db.Collection(s.Name())
+	s.user = app.GetGrpcApp("user").(user.RPCServer)
 
 	s.log = zap.L().Named(s.Name())
 

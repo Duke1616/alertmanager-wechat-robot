@@ -36,7 +36,8 @@ func (req *SaveAlertRequest) AlertInformationS() []interface{} {
 		information.Description = annotations["description"]
 		information.InstanceName = labels["customer_city"] + labels["customer_name"]
 		information.TargetName = req.TargetName
-		information.Others = strings.Join(req.Mention.Mobiles, ",")
+
+		information.Others = strings.Join(req.Mention.Username, ",")
 		information.ServiceName = labels["service_name"]
 		information.Source = labels["source"]
 		ais = append(ais, information)

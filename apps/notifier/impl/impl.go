@@ -5,6 +5,7 @@ import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notifier"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/user"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 
 	"github.com/infraboard/mcube/logger"
@@ -26,6 +27,7 @@ type service struct {
 	target target.RPCServer
 	alert  alert.RPCServer
 	policy policy.RPCServer
+	user   user.RPCServer
 }
 
 func (s *service) Config() error {
@@ -34,6 +36,7 @@ func (s *service) Config() error {
 	s.target = app.GetGrpcApp("target").(target.RPCServer)
 	s.policy = app.GetGrpcApp("policy").(policy.RPCServer)
 	s.alert = app.GetGrpcApp("alert").(alert.RPCServer)
+	s.user = app.GetGrpcApp("user").(user.RPCServer)
 	return nil
 }
 
