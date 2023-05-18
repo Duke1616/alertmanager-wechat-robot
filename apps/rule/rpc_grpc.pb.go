@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,9 +23,13 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCClient interface {
 	// 同步告警规则
-	SyncRule(ctx context.Context, in *SyncRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SyncRule(ctx context.Context, in *SyncRuleRequest, opts ...grpc.CallOption) (*SendResponse, error)
+	// 删除Rule
+	DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*RuleSet, error)
 	// 查询告警规则
 	QueryRule(ctx context.Context, in *QueryRuleRequest, opts ...grpc.CallOption) (*RuleSet, error)
+	// 删除Rule
+	DeleteGroup(ctx context.Context, in *DeleteGroupRequest, opts ...grpc.CallOption) (*GroupSet, error)
 	// 查询告警分组
 	QueryGroup(ctx context.Context, in *QueryGroupRequest, opts ...grpc.CallOption) (*GroupSet, error)
 }
@@ -39,9 +42,18 @@ func NewRPCClient(cc grpc.ClientConnInterface) RPCClient {
 	return &rPCClient{cc}
 }
 
-func (c *rPCClient) SyncRule(ctx context.Context, in *SyncRuleRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *rPCClient) SyncRule(ctx context.Context, in *SyncRuleRequest, opts ...grpc.CallOption) (*SendResponse, error) {
+	out := new(SendResponse)
 	err := c.cc.Invoke(ctx, "/robot.rule.RPC/SyncRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) DeleteRule(ctx context.Context, in *DeleteRuleRequest, opts ...grpc.CallOption) (*RuleSet, error) {
+	out := new(RuleSet)
+	err := c.cc.Invoke(ctx, "/robot.rule.RPC/DeleteRule", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +63,15 @@ func (c *rPCClient) SyncRule(ctx context.Context, in *SyncRuleRequest, opts ...g
 func (c *rPCClient) QueryRule(ctx context.Context, in *QueryRuleRequest, opts ...grpc.CallOption) (*RuleSet, error) {
 	out := new(RuleSet)
 	err := c.cc.Invoke(ctx, "/robot.rule.RPC/QueryRule", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) DeleteGroup(ctx context.Context, in *DeleteGroupRequest, opts ...grpc.CallOption) (*GroupSet, error) {
+	out := new(GroupSet)
+	err := c.cc.Invoke(ctx, "/robot.rule.RPC/DeleteGroup", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,9 +92,13 @@ func (c *rPCClient) QueryGroup(ctx context.Context, in *QueryGroupRequest, opts 
 // for forward compatibility
 type RPCServer interface {
 	// 同步告警规则
-	SyncRule(context.Context, *SyncRuleRequest) (*emptypb.Empty, error)
+	SyncRule(context.Context, *SyncRuleRequest) (*SendResponse, error)
+	// 删除Rule
+	DeleteRule(context.Context, *DeleteRuleRequest) (*RuleSet, error)
 	// 查询告警规则
 	QueryRule(context.Context, *QueryRuleRequest) (*RuleSet, error)
+	// 删除Rule
+	DeleteGroup(context.Context, *DeleteGroupRequest) (*GroupSet, error)
 	// 查询告警分组
 	QueryGroup(context.Context, *QueryGroupRequest) (*GroupSet, error)
 	mustEmbedUnimplementedRPCServer()
@@ -83,11 +108,17 @@ type RPCServer interface {
 type UnimplementedRPCServer struct {
 }
 
-func (UnimplementedRPCServer) SyncRule(context.Context, *SyncRuleRequest) (*emptypb.Empty, error) {
+func (UnimplementedRPCServer) SyncRule(context.Context, *SyncRuleRequest) (*SendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SyncRule not implemented")
+}
+func (UnimplementedRPCServer) DeleteRule(context.Context, *DeleteRuleRequest) (*RuleSet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRule not implemented")
 }
 func (UnimplementedRPCServer) QueryRule(context.Context, *QueryRuleRequest) (*RuleSet, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryRule not implemented")
+}
+func (UnimplementedRPCServer) DeleteGroup(context.Context, *DeleteGroupRequest) (*GroupSet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroup not implemented")
 }
 func (UnimplementedRPCServer) QueryGroup(context.Context, *QueryGroupRequest) (*GroupSet, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryGroup not implemented")
@@ -123,6 +154,24 @@ func _RPC_SyncRule_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPC_DeleteRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRuleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).DeleteRule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.rule.RPC/DeleteRule",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).DeleteRule(ctx, req.(*DeleteRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPC_QueryRule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryRuleRequest)
 	if err := dec(in); err != nil {
@@ -137,6 +186,24 @@ func _RPC_QueryRule_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCServer).QueryRule(ctx, req.(*QueryRuleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPC_DeleteGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).DeleteGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.rule.RPC/DeleteGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).DeleteGroup(ctx, req.(*DeleteGroupRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -171,8 +238,16 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPC_SyncRule_Handler,
 		},
 		{
+			MethodName: "DeleteRule",
+			Handler:    _RPC_DeleteRule_Handler,
+		},
+		{
 			MethodName: "QueryRule",
 			Handler:    _RPC_QueryRule_Handler,
+		},
+		{
+			MethodName: "DeleteGroup",
+			Handler:    _RPC_DeleteGroup_Handler,
 		},
 		{
 			MethodName: "QueryGroup",

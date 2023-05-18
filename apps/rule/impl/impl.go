@@ -2,6 +2,7 @@ package impl
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/setting"
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 	"github.com/infraboard/mcube/logger"
@@ -22,6 +23,8 @@ type service struct {
 	url string
 	log logger.Logger
 	rule.UnimplementedRPCServer
+
+	setting setting.RPCServer
 }
 
 func (s *service) Config() error {
@@ -32,9 +35,7 @@ func (s *service) Config() error {
 		return err
 	}
 
-	// vmalert 访问地址
-	s.url = conf.C().Vmalert.GetVmAlertUrl()
-
+	s.setting = app.GetGrpcApp(setting.AppName).(setting.RPCServer)
 	s.rule = db.Collection(s.Name())
 	s.group = db.Collection("group")
 	return nil

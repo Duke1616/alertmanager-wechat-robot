@@ -4,58 +4,72 @@ option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/rule";
 
 import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
 import "apps/rule/pb/rule.proto";
+import "apps/rule/pb/group.proto";
 import public "google/protobuf/Empty.proto";
 
 service RPC {
   // 同步告警规则
-  rpc SyncRule(SyncRuleRequest) returns(google.protobuf.Empty);
+  rpc SyncRule(SyncRuleRequest) returns(SendResponse);
+
+  // 删除Rule
+  rpc DeleteRule(DeleteRuleRequest) returns(RuleSet);
   // 查询告警规则
   rpc QueryRule(QueryRuleRequest) returns(RuleSet);
+
+  // 删除Rule
+  rpc DeleteGroup(DeleteGroupRequest) returns(GroupSet);
   // 查询告警分组
   rpc QueryGroup(QueryGroupRequest) returns(GroupSet);
 }
 
-enum SYNC_MODE {
-  ALL = 0;
-  GROUP = 1;
-  RULE = 2;
+message SyncRuleRequest {
+  // 根据配置信息进行同步
+  // @gotags: json:"setting_id"
+  string setting_id = 1;
 }
 
-message SyncRuleRequest {
-  // 同步模式
-  // @gotags: json:"sync_mode"
-  SYNC_MODE sync_mode = 1;
-  // 根据组进行同步
-  // @gotags: json:"group_name"
-  string group_name = 2;
-  // 根据组进行同步
-  // @gotags: json:"rule_name"
-  string rule_name = 3;
+message SendResponse {
+  bool success = 1;
 }
 
 message QueryRuleRequest {
   // 分页参数
   // @gotags: json:"page"
   infraboard.mcube.page.PageRequest page = 1;
-  // 告警名称
-  // @gotags: json:"name"
-  string name = 2;
-  // 告警分组
-  // @gotags: json:"group_name"
-  string group_name = 3;
+  // 组信息
+  // @gotags: json:"group_ids"
+  repeated string group_ids = 2;
   // 告警级别
   // @gotags: json:"level"
-  string level = 4;
+  string level = 3;
   // 告警服务
   // @gotags: json:"service_name"
-  string service_name = 5;
+  string service = 4;
 }
 
 message QueryGroupRequest {
   // 分页参数
   // @gotags: json:"page"
   infraboard.mcube.page.PageRequest page = 1;
-  // 告警名称
-  // @gotags: json:"name"
-  string name = 2;
+  // 告警分组
+  // @gotags: json:"domain"
+  string domain = 2;
+  // 告警分组
+  // @gotags: json:"namespace"
+  string namespace = 3;
+}
+
+message DeleteGroupRequest {
+  // 组信息
+  // @gotags: json:"domain" validate:"required,lte=60"
+  string domain = 1;
+  // 组信息
+  // @gotags: json:"namespace" validate:"required,lte=60"
+  string namespace = 2;
+}
+
+message DeleteRuleRequest {
+  // 组信息
+  // @gotags: json:"group_ids" validate:"required,lte=60"
+  repeated string group_ids = 2;
 }

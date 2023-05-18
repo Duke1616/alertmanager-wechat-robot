@@ -1,7 +1,9 @@
 package rule
 
 import (
+	"encoding/json"
 	"github.com/infraboard/mcube/http/request"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -9,14 +11,60 @@ func (req *QueryRuleRequest) Validate() error {
 	return validate.Struct(req)
 }
 
+func NewRules() *Rules {
+	return &Rules{}
+}
+
+func GetRules(url string) (*Rules, error) {
+	rules := NewRules()
+	resp, err := http.Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(result, rules)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return rules, nil
+}
+
+func (req *Rules) RuleSet(group *Group) []interface{} {
+	rus := make([]interface{}, 0, len(group.Rules))
+	for i := range group.Rules {
+		ru := &Rule{
+			Id:          group.Rules[i].Id,
+			Name:        group.Rules[i].Name,
+			Query:       group.Rules[i].Query,
+			GroupId:     group.Rules[i].GroupId,
+			Labels:      group.Rules[i].Labels,
+			Annotations: group.Rules[i].Annotations,
+			GroupName:   group.Name,
+			Level:       group.Rules[i].Labels["level"],
+			Service:     group.Rules[i].Labels["service"],
+		}
+		rus = append(rus, ru)
+	}
+
+	return rus
+}
+
 func NewQueryRuleRequestFromHTTP(r *http.Request) *QueryRuleRequest {
 	page := request.NewPageRequestFromHTTP(r)
 
 	qs := r.URL.Query()
 	req := NewDefaultQueryRuleRequest()
-	req.ServiceName = qs.Get("service_name")
-	req.Name = qs.Get("name")
-	req.GroupName = qs.Get("group_name")
+	req.Service = qs.Get("service")
 	req.Level = qs.Get("level")
 
 	req.Page = page
@@ -42,4 +90,18 @@ func (s *RuleSet) Add(item *Rule) {
 
 func NewDefaultRule() *Rule {
 	return &Rule{}
+}
+
+func NewDeleteRuleRequest(groupIds []string) *DeleteRuleRequest {
+	return &DeleteRuleRequest{
+		GroupIds: groupIds,
+	}
+}
+
+func (s *RuleSet) RuleIds() (rus []string) {
+	for i := range s.Items {
+		rus = append(rus, s.Items[i].Id)
+	}
+
+	return
 }

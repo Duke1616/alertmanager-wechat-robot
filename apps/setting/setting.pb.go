@@ -197,11 +197,11 @@ type CreateSettingRequest struct {
 	// @gotags: bson:"name" json:"name" validate:"required,lte=64"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name" bson:"name" validate:"required,lte=64"`
 	// 配置所属域
-	// @gotags: bson:"domain" json:"domain"
-	Domain string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain" bson:"domain"`
+	// @gotags: bson:"domain" json:"domain" validate:"required,lte=64"
+	Domain string `protobuf:"bytes,2,opt,name=domain,proto3" json:"domain" bson:"domain" validate:"required,lte=64"`
 	// 配置所属域名称空间
-	// @gotags: bson:"namespace" json:"namespace"
-	Namespace string `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace" bson:"namespace"`
+	// @gotags: bson:"namespace" json:"namespace" validate:"required,lte=64"
+	Namespace string `protobuf:"bytes,3,opt,name=namespace,proto3" json:"namespace" bson:"namespace" validate:"required,lte=64"`
 	// 配置类型
 	// @gotags: bson:"type" json:"type"
 	SettingType SETTING_TYPE `protobuf:"varint,4,opt,name=setting_type,json=settingType,proto3,enum=robot.setting.SETTING_TYPE" json:"type" bson:"type"`

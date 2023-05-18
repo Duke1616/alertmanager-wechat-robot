@@ -53,7 +53,8 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Param(ws.QueryParameter("page_size", "每一页的数据条数").DataType("uint64")).
 		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
 		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
-		Param(ws.QueryParameter("url", "webhook地址").DataType("string")).
+		Param(ws.QueryParameter("domain", "域").DataType("string")).
+		Param(ws.QueryParameter("namespace", "空间").DataType("string")).
 		Writes(rule.GroupSet{}).
 		Returns(200, "OK", rule.GroupSet{}).
 		Returns(404, "Not Found", nil))
@@ -66,14 +67,11 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Param(ws.QueryParameter("page_size", "每一页的数据条数").DataType("uint64")).
 		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
 		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
-		Param(ws.QueryParameter("name", "告警名称").DataType("string")).
-		Param(ws.QueryParameter("group_name", "告警组").DataType("string")).
-		Param(ws.QueryParameter("service_name", "告警服务").DataType("string")).
+		Param(ws.QueryParameter("service", "告警服务").DataType("string")).
 		Param(ws.QueryParameter("level", "告警级别").DataType("string")).
 		Writes(rule.RuleSet{}).
 		Returns(200, "OK", rule.RuleSet{}).
 		Returns(404, "Not Found", nil))
-
 }
 
 func init() {

@@ -33,10 +33,10 @@ message CreateSettingRequest {
   // @gotags: bson:"name" json:"name" validate:"required,lte=64"
   string name = 1;
   // 配置所属域
-  // @gotags: bson:"domain" json:"domain"
+  // @gotags: bson:"domain" json:"domain" validate:"required,lte=64"
   string domain = 2;
   // 配置所属域名称空间
-  // @gotags: bson:"namespace" json:"namespace"
+  // @gotags: bson:"namespace" json:"namespace" validate:"required,lte=64"
   string namespace = 3;
   // 配置类型
   // @gotags: bson:"type" json:"type"

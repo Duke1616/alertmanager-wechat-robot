@@ -9,27 +9,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (s *service) saveRules(ctx context.Context, rules *rule.Rules) error {
+func (s *service) saveRules(ctx context.Context, rules *rule.Rules, groupIds []string) error {
+	// 删除rule
+	_, err := s.DeleteRule(ctx, rule.NewDeleteRuleRequest(groupIds))
+	if err != nil {
+		return err
+	}
+
+	// 新增rule
 	for _, v := range rules.Data.Groups {
 		ruleset := rules.RuleSet(v)
 
-		// 更新已有rule的记录
-		newRule := make([]interface{}, 0, len(ruleset))
-		for i := range ruleset {
-			if err := s.rule.FindOneAndReplace(ctx, bson.M{"_id": ruleset[i].Id}, ruleset[i]).Err(); err != nil {
-				if err == mongo.ErrNoDocuments {
-					newRule = append(newRule, ruleset[i])
-				} else {
-					return err
-				}
-			}
-		}
-
-		// 插入rule新增记录
-		if len(newRule) > 0 {
-			if _, err := s.rule.InsertMany(ctx, newRule); err != nil {
-				return exception.NewInternalServerError("inserted a rule document error, %s", err)
-			}
+		if _, err := s.rule.InsertMany(ctx, ruleset); err != nil {
+			return exception.NewInternalServerError("inserted a rule document error, %s", err)
 		}
 	}
 
@@ -64,16 +56,12 @@ func (r *queryRuleRequest) FindOptions() *options.FindOptions {
 func (r *queryRuleRequest) FindFilter() bson.M {
 	filter := bson.M{}
 
-	if r.Name != "" {
-		filter["name"] = r.Name
+	if len(r.GroupIds) > 0 {
+		filter["group_id"] = bson.M{"$in": r.GroupIds}
 	}
 
-	if r.GroupName != "" {
-		filter["group_name"] = r.GroupName
-	}
-
-	if r.ServiceName != "" {
-		filter["service_name"] = r.ServiceName
+	if r.Service != "" {
+		filter["service"] = r.Service
 	}
 
 	if r.Level != "" {
@@ -81,4 +69,28 @@ func (r *queryRuleRequest) FindFilter() bson.M {
 	}
 
 	return filter
+}
+
+func (s *service) deleteRule(ctx context.Context, set *rule.RuleSet) error {
+	if set == nil || len(set.Items) == 0 {
+		return nil
+	}
+
+	var result *mongo.DeleteResult
+	var err error
+	if len(set.Items) == 1 {
+		result, err = s.rule.DeleteMany(ctx, bson.M{"_id": set.RuleIds()[0]})
+	} else {
+		result, err = s.rule.DeleteMany(ctx, bson.M{"_id": bson.M{"$in": set.RuleIds()}})
+	}
+
+	if err != nil {
+		return exception.NewInternalServerError("delete rule(%s) error, %s", set, err)
+	}
+
+	if result.DeletedCount == 0 {
+		return exception.NewNotFound("rule %s not found", set)
+	}
+
+	return nil
 }
