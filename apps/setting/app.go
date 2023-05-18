@@ -35,3 +35,19 @@ func NewSetting(req *CreateSettingRequest) (*Setting, error) {
 func NewDefaultSetting() *Setting {
 	return &Setting{}
 }
+
+// NewDescribeSettingRequestById 查询详情请求
+func NewDescribeSettingRequestById(id string) *DescribeSettingRequest {
+	return &DescribeSettingRequest{
+		DescribeBy: DESCRIBE_BY_ID,
+		Id:         id,
+	}
+}
+
+// NewDescribeSettingRequestByName 查询详情请求
+func NewDescribeSettingRequestByName(name string) *DescribeSettingRequest {
+	return &DescribeSettingRequest{
+		DescribeBy: DESCRIBE_BY_NAME,
+		Name:       name,
+	}
+}

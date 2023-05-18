@@ -23,3 +23,15 @@ func (h *handler) CreateSetting(r *restful.Request, w *restful.Response) {
 
 	utils.Success(w, set, "创建配置成功")
 }
+
+func (h *handler) DescribeSetting(r *restful.Request, w *restful.Response) {
+	req := setting.NewDescribeSettingRequestById(r.PathParameter("id"))
+
+	ins, err := h.service.DescribeSetting(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+
+	utils.Success(w, ins, "查询配置成功")
+}

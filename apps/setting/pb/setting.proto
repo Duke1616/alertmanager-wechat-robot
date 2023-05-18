@@ -41,18 +41,15 @@ message CreateSettingRequest {
   // 配置类型
   // @gotags: bson:"type" json:"type"
   SETTING_TYPE setting_type = 4;
-  // http or https
-  // @gotags: bson:"schema" json:"schema" validate:"required,lte=64"
-  string schema = 5;
   // url请求
   // @gotags: bson:"url" json:"url" validate:"required,lte=64"
-  string url = 6;
+  string url = 5;
   // 请求方式
   // @gotags: bson:"method" json:"method" validate:"required,lte=64"
-  string method = 7;
+  string method = 6;
   // 注释信息
   // @gotags: bson:"description" json:"description"
-  string description = 8;
+  string description = 7;
 }
 
 enum DESCRIBE_BY {

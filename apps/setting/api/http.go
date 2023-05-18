@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/setting"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 	"github.com/infraboard/mcube/http/label"
 
@@ -44,6 +45,16 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Reads(setting.CreateSettingRequest{}).
 		Writes(setting.Setting{}))
+
+	ws.Route(ws.GET("/{id}").To(h.DescribeSetting).
+		Doc("查询配置详情信息").
+		Metadata(label.Resource, target.AppName).
+		Metadata(label.Auth, false).
+		Param(ws.PathParameter("id", "setting id").DataType("integer").DefaultValue("1")).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Writes(setting.Setting{}).
+		Returns(200, "OK", setting.Setting{}).
+		Returns(404, "Not Found", nil))
 }
 
 func init() {
