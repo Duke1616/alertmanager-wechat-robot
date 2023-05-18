@@ -19,8 +19,7 @@ func newConfig() *Config {
 		App: newDefaultAPP(),
 		Log: newDefaultLog(),
 
-		Mongo:   newDefaultMongoDB(),
-		Vmalert: newDefaultVmAlert(),
+		Mongo: newDefaultMongoDB(),
 	}
 }
 
@@ -29,8 +28,7 @@ type Config struct {
 	App *app `toml:"app"`
 	Log *log `toml:"log"`
 
-	Mongo   *mongodb `toml:"mongodb"`
-	Vmalert *vmalert `toml:"vmalert"`
+	Mongo *mongodb `toml:"mongodb"`
 }
 
 func (c *Config) InitGlobal() error {
@@ -176,22 +174,4 @@ func (m *mongodb) getClient() (*mongo.Client, error) {
 	}
 
 	return client, nil
-}
-
-type vmalert struct {
-	Schema string `toml:"schema" env:"VM_ALERT_SCHEMA"`
-	Host   string `toml:"host" env:"VM_ALERT_HOST"`
-	Port   string `toml:"port" env:"VM_ALERT_PORT"`
-}
-
-func newDefaultVmAlert() *vmalert {
-	return &vmalert{
-		Schema: "http",
-		Host:   "127.0.0.1",
-		Port:   "8080",
-	}
-}
-
-func (v *vmalert) GetVmAlertUrl() string {
-	return fmt.Sprintf("%s://%s:%s/%s", v.Schema, v.Host, v.Port, "api/v1/rules")
 }
