@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
 	"github.com/Duke1616/alertmanager-wechat-robot/utils"
 	"github.com/emicklei/go-restful/v3"
@@ -37,6 +38,8 @@ func (h *handler) DescribePolicy(r *restful.Request, w *restful.Response) {
 
 func (h *handler) QueryPolicy(r *restful.Request, w *restful.Response) {
 	req := policy.NewQueryPolicyRequestFromHTTP(r.Request)
+
+	fmt.Println(req)
 	ins, err := h.service.QueryPolicy(r.Request.Context(), req)
 	if err != nil {
 		response.Failed(w, err)

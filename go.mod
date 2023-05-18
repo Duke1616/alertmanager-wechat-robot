@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/spec v0.20.4
 	github.com/go-playground/validator/v10 v10.10.0
 	github.com/golang/protobuf v1.5.2
+	github.com/group-robot/work-weixin-robot v0.0.0-20220815095325-2d8918fa7114
 	github.com/imdario/mergo v0.3.15
 	github.com/infraboard/mcube v1.9.11
 	github.com/rs/xid v1.3.0
@@ -29,6 +30,7 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-resty/resty/v2 v2.7.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect

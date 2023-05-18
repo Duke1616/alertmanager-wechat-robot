@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package robot.history;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/history";
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+import "apps/webhook/pb/webhook.proto";
+import "google/protobuf/Empty.proto";
+
+service RPC {
+  // 保存报警信息
+  rpc SaveHistory(SaveHistoryRequest) returns(google.protobuf.Empty);
+  // 查询报警历史信息
+  rpc QueryHistory(QueryHistoryRequest) returns(HistorySet);
+}
+
+message History {
+  // id信息
+  // @gotags: bson:"_id" json:"id"
+  string id = 1;
+  // 告警类型
+  // @gotags: bson:"type" json:"type"
+  string type = 2;
+  // 告警来源
+  // @gotags: bson:"source" json:"source"
+  string source = 3;
+  // 服务名称
+  // @gotags: bson:"service" json:"service"
+  string service = 4;
+  // 告警级别
+  // @gotags: bson:"level" json:"level"
+  string level = 5;
+  // 告警名称
+  // @gotags: bson:"alertname" json:"alertname"
+  string alertname = 6;
+  // 告警主机
+  // @gotags: bson:"instance_name" json:"instance_name"
+  string instance_name = 7;
+  // 告警详情
+  // @gotags: bson:"description" json:"description"
+  string description = 8;
+  // 接收群组
+  // @gotags: bson:"target" json:"target"
+  string target = 9;
+  // 通知人
+  // @gotags: bson:"users" json:"users"
+  repeated string users = 10;
+  // 告警时间
+  // @gotags: bson:"start_at" json:"start_at"
+  int64 start_at = 11;
+  // 恢复时间
+  // @gotags: bson:"end_at" json:"end_at"
+  int64 end_at = 12;
+  // 告警通知时间
+  // @gotags: bson:"notification_at" json:"notification_at"
+  int64 notification_at = 13;
+}
+
+message HistorySet {
+  // 总数量
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // 数据
+  // @gotags: bson:"items" json:"items"
+  repeated History items = 2;
+}
+
+
+message SaveHistoryRequest {
+  // 接收群组
+  // @gotags: bson:"domain" json:"domain"
+  string domain = 1;
+  // 是否成功
+  // @gotags: bson:"success" json:"success"
+  bool success = 2;
+  // 报警信息
+  // @gotags: bson:"data" json:"data"
+  webhook.TransformAlertData data = 3;
+}
+
+
+message QueryHistoryRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // 告警类型
+  // @gotags: json:"type"
+  string type = 2;
+  // 告警服务
+  // @gotags: json:"service"
+  string service = 3;
+  // 告警级别
+  // @gotags: json:"level"
+  string level = 4;
+  // 告警实例
+  // @gotags: json:"instance"
+  string instance = 5;
+  // 告警群组
+  // @gotags: json:"target"
+  string target = 6;
+  // 告警通知人
+  // @gotags: json:"user"
+  string user = 7;
+  // 告警名称
+  // @gotags: json:"alertname"
+  string alertname = 8;
+}

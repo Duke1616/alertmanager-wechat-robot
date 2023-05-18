@@ -9,6 +9,8 @@ import "common/pb/github.com/infraboard/mcube/pb/request/request.proto";
 service RPC {
   // 创建规则信息
   rpc CreatePolicy(CreatePolicyRequest) returns(Policy);
+  // 创建联合规则
+  rpc CreateJoinPolicy(CreateJoinPolicyRequest) returns(Policy);
   // 查看规则信息
   rpc DescribePolicy(DescribePolicyRequest) returns(Policy);
   // 查询群组下的所有规则
@@ -31,6 +33,9 @@ message DescribePolicyRequest {
   // 服务客户端Id
   // @gotags: json:"id"
   string id = 2;
+  // 策略类型
+  // @gotags: json:"policy_type"
+  string policy_type = 3;
 }
 
 message QueryPolicyRequest {
@@ -40,12 +45,18 @@ message QueryPolicyRequest {
   // target_id
   // @gotags: json:"target_name"
   string target_name = 2;
-  // policy 的标签类型
-  // @gotags: json:"label_type"
-  LABEL_TYPE label_type = 3;
   // policy_ids
   // @gotags: json:"policy_ids"
   repeated string policy_ids = 4;
+  // 策略类型
+  // @gotags: json:"policy_type"
+  string policy_type = 5;
+  // 策略类型
+  // @gotags: json:"create_type"
+  string create_type = 6;
+  // 排序方式
+  // @gotags: json:"sort"
+  string sort = 7;
 }
 
 message UpdatePolicyRequest {

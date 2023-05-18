@@ -45,7 +45,7 @@ func (req *Rules) RuleSet(group *Group) []*Rule {
 			Annotations: group.Rules[i].Annotations,
 			GroupName:   group.Name,
 			Level:       group.Rules[i].Labels["level"],
-			ServiceName: group.Rules[i].Labels["service_name"],
+			ServiceName: group.Rules[i].Labels["service"],
 		}
 		rus = append(rus, ru)
 	}

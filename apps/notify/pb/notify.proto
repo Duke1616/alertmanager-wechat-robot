@@ -1,0 +1,52 @@
+syntax = "proto3";
+package robot.notify;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/notify";
+
+// 用户消息通知
+service RPC {
+  rpc SendNotify(SendNotifyRequest) returns(SendResponse);
+}
+
+enum NOTIFY_TYPE {
+  WECHAT = 0;
+  EMAIL = 1;
+  PHONE = 2;
+}
+
+message SendNotifyRequest {
+  // 发送类型
+  // @gotags: bson:"notify_type" json:"notify_type"
+  NOTIFY_TYPE notify_type = 1;
+  // 消息标题
+  // @gotags: json:"title" bson:"title" validate:"required"
+  string title = 2;
+  // 用户
+  // @gotags: json:"users" bson:"users"
+  repeated string users = 3;
+  // 目标ID
+  // @gotags: bson:"target_id" json:"target_id"
+  string target_id = 4;
+  // 消息格式
+  // @gotags: bson:"content_type" json:"content_type"
+  string content_type = 5;
+  // 消息内容
+  // @gotags: json:"content" bson:"content"
+  string content = 6;
+  // 企业微信格式
+  // @gotags: bson:"wechat_request" json:"wechat_request"
+  WechatRequest wechat_request = 7;
+}
+
+
+message WechatRequest {
+  // 是否@所有人
+  // @gotags: bson:"url" json:"url"
+  string url = 1;
+  // 是否@所有人
+  // @gotags: bson:"secret" json:"secret"
+  string secret = 2;
+}
+
+message SendResponse {
+  bool success = 1;
+}

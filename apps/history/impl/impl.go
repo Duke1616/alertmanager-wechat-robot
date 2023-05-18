@@ -1,16 +1,14 @@
 package impl
 
 import (
-	"context"
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/history"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
+
 	"github.com/infraboard/mcube/logger"
 	"github.com/infraboard/mcube/logger/zap"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 	"google.golang.org/grpc"
 )
 
@@ -22,51 +20,33 @@ var (
 type service struct {
 	col *mongo.Collection
 	log logger.Logger
-	policy.UnimplementedRPCServer
+	history.UnimplementedRPCServer
 
 	target target.RPCServer
 }
 
 func (s *service) Config() error {
-	s.log = zap.L().Named(s.Name())
 	// 依赖MongoDB的DB对象
 	db, err := conf.C().Mongo.GetDB()
 	if err != nil {
 		return err
 	}
 
-	dc := db.Collection(s.Name())
-
-	indexes := []mongo.IndexModel{
-		{
-			Keys: bsonx.Doc{{Key: "spec.priority", Value: bsonx.Int32(-1)}},
-		},
-		{
-			Keys: bsonx.Doc{
-				{Key: "spec.name", Value: bsonx.Int32(-1)},
-			},
-			Options: options.Index().SetUnique(true),
-		},
-	}
-
-	_, err = dc.Indexes().CreateMany(context.Background(), indexes)
-	if err != nil {
-		return err
-	}
-
-	s.col = dc
+	// 获取一个Collection对象, 通过Collection对象 来进行CRUD
+	s.col = db.Collection(s.Name())
 
 	s.target = app.GetGrpcApp("target").(target.RPCServer)
-	s.col = db.Collection(s.Name())
+	s.log = zap.L().Named(s.Name())
+
 	return nil
 }
 
 func (s *service) Name() string {
-	return policy.AppName
+	return history.AppName
 }
 
 func (s *service) Registry(server *grpc.Server) {
-	policy.RegisterRPCServer(server, svr)
+	history.RegisterRPCServer(server, svr)
 }
 
 func init() {

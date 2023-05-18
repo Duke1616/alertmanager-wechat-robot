@@ -23,14 +23,53 @@ func (s *service) CreatePolicy(ctx context.Context, req *policy.CreatePolicyRequ
 		}
 
 		r.TargetName = t.Spec.Name
-		//r.Spec.Mention.Username =
 	}
 
-	if _, err = s.col.InsertOne(ctx, r); err != nil {
-		return nil, exception.NewInternalServerError("inserted a policy document error, %s", err)
+	switch req.PolicyType {
+	case policy.POLICY_TYPE_APPOINT:
+		err = s.createPolicyByJoin(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	case policy.POLICY_TYPE_RADIO:
+		if _, err = s.col.InsertOne(ctx, r); err != nil {
+			return nil, exception.NewInternalServerError("inserted a policy document error, %s", err)
+		}
+	case policy.POLICY_TYPE_JOIN:
+		err = s.createPolicyByJoin(ctx, req)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return r, nil
+}
+
+func (s *service) createPolicyByJoin(ctx context.Context, req *policy.CreatePolicyRequest) error {
+	// 查询系统创建规则
+	p, err := s.DescribePolicy(ctx, policy.NewDescribePolicyRequestById(req.JoinId))
+
+	if err != nil {
+		s.log.Debugf("查询规则失败，%s", err)
+		return err
+	}
+
+	// 查询勾选的所有策略
+	queryReq := policy.NewDefaultQueryPolicyRequest()
+	queryReq.PolicyIds = req.Ids
+	set, err := s.QueryPolicy(ctx, queryReq)
+	if err != nil {
+		s.log.Debugf("查询数据失败，%s", err)
+		return err
+	}
+
+	sets := req.AddTag(p.Spec.Tags, set)
+
+	if _, err = s.col.InsertMany(ctx, sets); err != nil {
+		return exception.NewInternalServerError("inserted a history document error, %s", err)
+	}
+
+	return nil
 }
 
 func (s *service) DescribePolicy(ctx context.Context, req *policy.DescribePolicyRequest) (*policy.Policy, error) {

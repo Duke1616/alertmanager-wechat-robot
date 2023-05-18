@@ -27,8 +27,14 @@ func (r *queryPolicyRequest) FindOptions() *options.FindOptions {
 	pageSize := int64(r.Page.PageSize)
 	skip := int64(r.Page.PageSize) * int64(r.Page.PageNumber-1)
 
+	sort := "create_at"
+
+	if r.Sort != "" {
+		sort = "spec.priority"
+	}
+
 	opt := &options.FindOptions{
-		Sort:  bson.D{{Key: "create_at", Value: -1}},
+		Sort:  bson.D{{Key: sort, Value: -1}},
 		Limit: &pageSize,
 		Skip:  &skip,
 	}
@@ -47,13 +53,13 @@ func (r *queryPolicyRequest) FindFilter() bson.M {
 		filter["_id"] = bson.M{"$in": r.PolicyIds}
 	}
 
-	// TODO 根据标签过滤
-	//switch r.LabelType {
-	//case policy.LABEL_TYPE_GROUP:
-	//	filter["spec.label_type"] = r.LabelType
-	//case policy.LABEL_TYPE_COMMON:
-	//	filter["spec.label_type"] = r.LabelType
-	//}
+	if r.CreateType != "" {
+		filter["create_type"], _ = policy.ParseCREATE_TYPEFromString(r.CreateType)
+	}
+
+	if r.PolicyType != "" {
+		filter["spec.policy_type"], _ = policy.ParsePOLICY_TYPEFromString(r.PolicyType)
+	}
 
 	return filter
 }

@@ -27,12 +27,25 @@ func NewPolicy(req *CreatePolicyRequest) (*Policy, error) {
 		return nil, err
 	}
 
-	return &Policy{
+	policyData := &Policy{
 		Id:       xid.New().String(),
 		Enabled:  true,
 		CreateAt: time.Now().UnixMilli(),
 		Spec:     req,
-	}, nil
+	}
+
+	if req.Priority == 0 {
+		switch req.PolicyType {
+		case POLICY_TYPE_RADIO:
+			policyData.Spec.Priority = 40
+		case POLICY_TYPE_JOIN:
+			policyData.Spec.Priority = 60
+		case POLICY_TYPE_APPOINT:
+			policyData.Spec.Priority = 80
+		}
+	}
+
+	return policyData, nil
 }
 
 func (req *DeletePolicyRequest) Validate() error {
@@ -60,21 +73,23 @@ func NewQueryPolicyRequestFromHTTP(r *http.Request) *QueryPolicyRequest {
 	qs := r.URL.Query()
 	req := NewDefaultQueryPolicyRequest()
 	req.TargetName = qs.Get("target_name")
-
-	//lt := qs.Get("label_type")
-	//req.LabelType, _ = ParseLABEL_TYPEFromString(lt)
+	req.CreateType = qs.Get("create_type")
+	req.PolicyType = qs.Get("policy_type")
+	req.Sort = qs.Get("sort")
 
 	rids := qs.Get("policy_ids")
 	if rids != "" {
-		//index := strings.Index(rids, ",")
-		//if index == -1 {
-		//	rids += ","
-		//}
 		req.PolicyIds = strings.Split(rids, ",")
 	}
 
 	req.Page = page
 	return req
+}
+
+func NewDefaultQueryPolicyRequestEnum() *QueryPolicyRequest {
+	return &QueryPolicyRequest{
+		Page: request.NewDefaultPageRequest(),
+	}
 }
 
 func NewDefaultQueryPolicyRequest() *QueryPolicyRequest {
@@ -137,8 +152,42 @@ func NewQueryPolicyRequestByName(targetName string) *QueryPolicyRequest {
 	}
 }
 
+func NewQueryPolicyRequestByDomain(sort string) *QueryPolicyRequest {
+	return &QueryPolicyRequest{
+		Page: request.NewPageRequest(100, 1),
+		Sort: sort,
+	}
+}
+
+func NewQueryPolicyRequestByIds(ids []string) *QueryPolicyRequest {
+	return &QueryPolicyRequest{
+		Page:      request.NewPageRequest(100, 1),
+		PolicyIds: ids,
+	}
+}
+
 func NewDeletePolicyRequest() *DeletePolicyRequest {
 	return &DeletePolicyRequest{
 		PolicyIds: []string{},
 	}
+}
+
+func (req *CreatePolicyRequest) AddTag(tags []*Tag, set *PolicySet) []interface{} {
+	pSet := make([]interface{}, 0, len(set.Items))
+
+	for _, v := range set.Items {
+		p, _ := NewPolicy(req)
+
+		// tag数组合并
+		p.Spec.Tags = append(p.Spec.Tags, v.Spec.Tags[:]...)
+		p.Spec.Tags = append(p.Spec.Tags, tags[:]...)
+
+		pSet = append(pSet, p)
+	}
+
+	return pSet
+}
+
+func NewCreateRequest() *CreatePolicyRequest {
+	return &CreatePolicyRequest{}
 }

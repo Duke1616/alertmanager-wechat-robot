@@ -1,0 +1,11 @@
+syntax = "proto3";
+package robot.dashboard;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/dashboard";
+
+service RPC {
+    rpc QueryAlertMessage(Request) returns(Request);
+}
+
+message Request {
+
+}

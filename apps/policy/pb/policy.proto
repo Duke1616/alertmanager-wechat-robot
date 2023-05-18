@@ -2,12 +2,34 @@ syntax = "proto3";
 package robot.policy;
 option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/policy";
 
+enum CREATE_TYPE {
+  // 用户创建
+  USER = 0;
+  // 系统创建
+  SYSTEM = 1;
+}
+
+// 单选创建单条规则
+// 联合类型 = 用户创建 + 系统创建
+// 指定类型 = 联合类型 + 报警名称
+
+enum POLICY_TYPE {
+  // 创建
+  RADIO = 0;
+  // 联合类型
+  JOIN = 1;
+  // 指定类型
+  APPOINT = 2;
+}
+
 enum ACTIVE {
   NEWS = 0;
   // 状态转换
-  STATUS_TRANS = 2;
+  STATUS_TRANS = 1;
   // 丢弃报警
-  DROP = 1;
+  DROP = 2;
+  // 跳过
+  SKIP = 3;
 }
 
 enum LABEL_TYPE {
@@ -36,6 +58,9 @@ message Policy {
   // 创建信息
   // @gotags: bson:"spec" json:"spec"
   CreatePolicyRequest spec = 6;
+  // 父亲ID
+  // @gotags: bson:"parent_id" json:"parent_id"
+  string parent_id = 7;
 }
 
 message PolicySet {
@@ -51,33 +76,68 @@ message CreatePolicyRequest {
   // 策略名称
   // @gotags: bson:"name" json:"name" validate:"required,lte=64"
   string name = 1;
-  // 关联target_name
+  // 关联告警目标
   // @gotags: bson:"target_id" json:"target_id" validate:"required,lte=64"
   string target_id = 2;
-  // 标签类型
-  // @gotags: bson:"label_type" json:"label_type"
-  LABEL_TYPE label_type = 3;
+  // 规则所属域
+  // @gotags: bson:"domain_id" json:"domain_id"
+  string domain_id = 3;
   // 匹配标签
-  // @gotags: bson:"label" json:"label" validate:"required,lte=64"
-  string label = 4;
-  // 匹配值
-  // @gotags: bson:"value" json:"value"lsGaofei123@15046094252
-
-  repeated string value = 5;
+  // @gotags: bson:"tags" json:"tags" validate:"required"
+  repeated Tag tags = 4;
+  // 策略类型
+  // @gotags: bson:"policy_type" json:"policy_type"
+  POLICY_TYPE policy_type = 5;
   // 动作
   // @gotags: bson:"active" json:"active"
   ACTIVE active = 6;
+  // 描述
+  // @gotags: bson:"description" json:"description"
+  string description = 7;
+  // 优先级，不填写自动计算，100为最高，以关联层数为条件
+  // @gotags: bson:"priority" json:"priority"
+  int64 priority = 8;
   // @其他人
   // @gotags: bson:"mention" json:"mention"
-  Mention mention = 7;
+  Mention mention = 9;
+  // 联合ID
+  // @gotags: bson:"ids" json:"ids"
+  repeated string ids = 10;
+  // 联合系统ID
+  // @gotags: bson:"join_id" json:"join_id"
+  string join_id = 11;
+  // 策略创建方式
+  // @gotags: bson:"create_type" json:"create_type"
+  CREATE_TYPE create_type = 12;
+}
+
+message Tag {
+  // 标签类型
+  // @gotags: bson:"label_type" json:"label_type"
+  LABEL_TYPE label_type = 1;
+  // 匹配标签
+  // @gotags: bson:"label" json:"label" validate:"required,lte=64"
+  string label = 2;
+  // 匹配值
+  // @gotags: bson:"value" json:"value"
+  string value = 3;
 }
 
 // 提到的人
 message Mention {
-  // 是否@所有人
+  // 是否通知所有人
   // @gotags: bson:"all" json:"all"
   bool all = 1;
-  // @指定的人
-  // @gotags: bson:"username" json:"username"
-  repeated string username = 2;
+  // 通知指定用户
+  // @gotags: bson:"user_ids" json:"user_ids"
+  repeated string user_ids = 2;
+  // 通知指定用户
+  // @gotags: bson:"users" json:"users"
+  repeated string users = 3;
+}
+
+message CreateJoinPolicyRequest {
+  // policy_ids
+  // @gotags: bson:"policy_ids" json:"policy_ids"
+  repeated string policy_ids = 1;
 }
