@@ -1,0 +1,73 @@
+syntax = "proto3";
+package robot.setting;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/setting";
+
+service RPC {
+  // 创建配置
+  rpc CreateSetting(CreateSettingRequest) returns(Setting);
+  // 查询配置
+  rpc DescribeSetting(DescribeSettingRequest) returns(Setting);
+}
+
+enum SETTING_TYPE {
+  ALERT = 0;
+}
+
+message Setting {
+  // setting ID
+  // @gotags: bson:"_id" json:"id"
+  string id = 1;
+  // 创建时间
+  // @gotags: bson:"create_at" json:"create_at"
+  int64 create_at = 2;
+  // 更新时间
+  // @gotags: bson:"update_at" json:"update_at"
+  int64 update_at = 3;
+  // domain信息
+  // @gotags: bson:"spec" json:"spec"
+  CreateSettingRequest spec = 4;
+}
+
+message CreateSettingRequest {
+  // 名称
+  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  string name = 1;
+  // 配置所属域
+  // @gotags: bson:"domain" json:"domain"
+  string domain = 2;
+  // 配置所属域名称空间
+  // @gotags: bson:"namespace" json:"namespace"
+  string namespace = 3;
+  // 配置类型
+  // @gotags: bson:"type" json:"type"
+  SETTING_TYPE setting_type = 4;
+  // http or https
+  // @gotags: bson:"schema" json:"schema" validate:"required,lte=64"
+  string schema = 5;
+  // url请求
+  // @gotags: bson:"url" json:"url" validate:"required,lte=64"
+  string url = 6;
+  // 请求方式
+  // @gotags: bson:"method" json:"method" validate:"required,lte=64"
+  string method = 7;
+  // 注释信息
+  // @gotags: bson:"description" json:"description"
+  string description = 8;
+}
+
+enum DESCRIBE_BY {
+  ID = 0;
+  NAME = 1;
+}
+
+message DescribeSettingRequest {
+  // 查询方式
+  // @gotags: json:"describe_by"
+  DESCRIBE_BY describe_by = 1;
+  // 通过Id查询
+  // @gotags: json:"id"
+  string id = 2;
+  // 通过name查询
+  // @gotags: json:"name"
+  string name = 3;
+}

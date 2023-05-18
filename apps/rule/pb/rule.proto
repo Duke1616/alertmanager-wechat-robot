@@ -25,12 +25,12 @@ message Group {
   // 组名称
   // @gotags: bson:"name" json:"name" validate:"required,lte=64"
   string name = 2;
-  // 最后更新时间
-  // @gotags: bson:"last_evaluation" json:"lastEvaluation"
-  string last_evaluation = 3;
-  // 报警来源类型
-  // @gotags: bson:"type" json:"type"
-  string type = 4;
+  // 组所在域
+  // @gotags: bson:"domain" json:"domain"
+  string domain = 3;
+  // 组所在名称空间
+  // @gotags: bson:"namespace" json:"namespace"
+  string namespace = 4;
   // 组使用的配置文件
   // @gotags: bson:"file" json:"file"
   string file = 5;
@@ -72,8 +72,8 @@ message Rule {
   // @gotags: bson:"level" json:"level"
   string level = 6;
   // 规则查询语句
-  // @gotags: bson:"service_name" json:"service_name"
-  string service_name = 7;
+  // @gotags: bson:"service" json:"service"
+  string service  = 7;
   // 规则标签
   // @gotags: bson:"labels" json:"labels"
   map<string, string> labels = 8;

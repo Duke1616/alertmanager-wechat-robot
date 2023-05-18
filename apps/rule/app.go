@@ -20,12 +20,10 @@ func (req *Rules) GroupSet() []*Group {
 	gps := make([]*Group, 0, len(req.Data.Groups))
 	for i := range req.Data.Groups {
 		gp := &Group{
-			Id:             req.Data.Groups[i].Id,
-			Name:           req.Data.Groups[i].Name,
-			Type:           req.Data.Groups[i].Type,
-			File:           req.Data.Groups[i].File,
-			Interval:       req.Data.Groups[i].Interval,
-			LastEvaluation: req.Data.Groups[i].LastEvaluation,
+			Id:       req.Data.Groups[i].Id,
+			Name:     req.Data.Groups[i].Name,
+			File:     req.Data.Groups[i].File,
+			Interval: req.Data.Groups[i].Interval,
 		}
 
 		gps = append(gps, gp)
@@ -45,7 +43,7 @@ func (req *Rules) RuleSet(group *Group) []*Rule {
 			Annotations: group.Rules[i].Annotations,
 			GroupName:   group.Name,
 			Level:       group.Rules[i].Labels["level"],
-			ServiceName: group.Rules[i].Labels["service"],
+			Service:     group.Rules[i].Labels["service"],
 		}
 		rus = append(rus, ru)
 	}
