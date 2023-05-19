@@ -1,0 +1,58 @@
+syntax = "proto3";
+package robot.filter;
+option go_package = "github.com/Duke1616/alertmanager-wechat-robot/apps/filter";
+import "common/pb/github.com/infraboard/mcube/pb/page/page.proto";
+import "apps/policy/pb/policy.proto";
+
+service RPC {
+  // 创建过滤条件
+  rpc CreateFilter(CreateFilterRequest) returns(Filter);
+  // 查询过滤条件
+  rpc QueryFilter(QueryFilterRequest) returns(FilterSet);
+}
+
+message Filter {
+  // policy ID
+  // @gotags: bson:"_id" json:"id"
+  string id = 1;
+  // 是否开启
+  // @gotags: bson:"enabled" json:"enabled"
+  bool enabled = 2;
+  // 创建时间
+  // @gotags: bson:"create_at" json:"create_at"
+  int64 create_at = 3;
+  // 匹配信息
+  // @gotags: bson:"meta" json:"meta"
+  map<string, string> meta = 4;
+  // 创建信息
+  // @gotags: bson:"spec" json:"spec"
+  CreateFilterRequest spec = 5;
+}
+
+
+message FilterSet {
+  // 总数量
+  // @gotags: bson:"total" json:"total"
+  int64 total = 1;
+  // 数据
+  // @gotags: bson:"items" json:"items"
+  repeated Filter items = 2;
+}
+
+message CreateFilterRequest {
+  // 标识名称
+  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  string name = 1;
+  // 匹配信息
+  // @gotags: bson:"tags" json:"tags" validate:"required,lte=64"
+  repeated policy.Tag tags = 2;
+}
+
+message QueryFilterRequest {
+  // 分页参数
+  // @gotags: json:"page"
+  infraboard.mcube.page.PageRequest page = 1;
+  // 匹配信息
+  // @gotags: bson:"meta" json:"meta"
+  map<string, string> meta = 4;
+}

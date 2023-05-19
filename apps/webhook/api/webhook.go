@@ -16,6 +16,10 @@ func (h *handler) TransformToMarkdown(r *restful.Request, w *restful.Response) {
 		Alerts: []*webhook.Alert{},
 	}
 
+	qs := r.Request.URL.Query()
+	isIndex := qs.Get("filter")
+	req.IsFilter = isIndex
+
 	err := jsonpb.Unmarshal(r.Request.Body, req)
 	if err != nil {
 		h.log.Error(err)

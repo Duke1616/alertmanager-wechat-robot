@@ -55,6 +55,9 @@ message QueryPolicyRequest {
   // 排序方式
   // @gotags: json:"sort"
   string sort = 7;
+  // 快速检索
+  // @gotags: json:"filter_name"
+  string filter_name = 8;
 }
 
 message UpdatePolicyRequest {

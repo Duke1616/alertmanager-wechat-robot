@@ -3,8 +3,6 @@ package impl
 import (
 	"context"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/filter"
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
-	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/Duke1616/alertmanager-wechat-robot/conf"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
 	"github.com/infraboard/mcube/logger"
@@ -23,14 +21,10 @@ var (
 type service struct {
 	col *mongo.Collection
 	log logger.Logger
-	policy.UnimplementedRPCServer
-
-	target target.RPCServer
-	filter filter.RPCServer
+	filter.UnimplementedRPCServer
 }
 
 func (s *service) Config() error {
-	s.log = zap.L().Named(s.Name())
 	// 依赖MongoDB的DB对象
 	db, err := conf.C().Mongo.GetDB()
 	if err != nil {
@@ -40,12 +34,6 @@ func (s *service) Config() error {
 	dc := db.Collection(s.Name())
 
 	indexes := []mongo.IndexModel{
-		{
-			Keys: bsonx.Doc{{Key: "spec.priority", Value: bsonx.Int32(-1)}},
-		},
-		{
-			Keys: bsonx.Doc{{Key: "spec.index", Value: bsonx.Int32(-1)}},
-		},
 		{
 			Keys: bsonx.Doc{
 				{Key: "spec.name", Value: bsonx.Int32(-1)},
@@ -61,18 +49,16 @@ func (s *service) Config() error {
 
 	s.col = dc
 
-	s.filter = app.GetGrpcApp("filter").(filter.RPCServer)
-	s.target = app.GetGrpcApp("target").(target.RPCServer)
-	s.col = db.Collection(s.Name())
+	s.log = zap.L().Named(s.Name())
 	return nil
 }
 
 func (s *service) Name() string {
-	return policy.AppName
+	return filter.AppName
 }
 
 func (s *service) Registry(server *grpc.Server) {
-	policy.RegisterRPCServer(server, svr)
+	filter.RegisterRPCServer(server, svr)
 }
 
 func init() {

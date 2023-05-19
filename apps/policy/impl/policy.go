@@ -2,6 +2,7 @@ package impl
 
 import (
 	"context"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/filter"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	"github.com/infraboard/mcube/exception"
@@ -27,16 +28,28 @@ func (s *service) CreatePolicy(ctx context.Context, req *policy.CreatePolicyRequ
 
 	switch req.PolicyType {
 	case policy.POLICY_TYPE_APPOINT:
-		err = s.createPolicyByJoin(ctx, req)
+		err = s.createPolicyByJoin(ctx, req, r.TargetName)
 		if err != nil {
 			return nil, err
 		}
 	case policy.POLICY_TYPE_RADIO:
+		// 是否创建filter过滤条件
+		if req.IsFilter == true {
+			_, err = s.filter.CreateFilter(ctx, filter.NewCreateFilter(req.FilterName, req.Tags))
+			if err != nil {
+				s.log.Debugf("创建filter失败，%s", err)
+				return nil, err
+			}
+		} else {
+			req.FilterName = ""
+		}
+
+		// 插入策略
 		if _, err = s.col.InsertOne(ctx, r); err != nil {
 			return nil, exception.NewInternalServerError("inserted a policy document error, %s", err)
 		}
 	case policy.POLICY_TYPE_JOIN:
-		err = s.createPolicyByJoin(ctx, req)
+		err = s.createPolicyByJoin(ctx, req, r.TargetName)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +58,7 @@ func (s *service) CreatePolicy(ctx context.Context, req *policy.CreatePolicyRequ
 	return r, nil
 }
 
-func (s *service) createPolicyByJoin(ctx context.Context, req *policy.CreatePolicyRequest) error {
+func (s *service) createPolicyByJoin(ctx context.Context, req *policy.CreatePolicyRequest, targetName string) error {
 	// 查询系统创建规则
 	p, err := s.DescribePolicy(ctx, policy.NewDescribePolicyRequestById(req.JoinId))
 
@@ -63,10 +76,11 @@ func (s *service) createPolicyByJoin(ctx context.Context, req *policy.CreatePoli
 		return err
 	}
 
-	sets := req.AddTag(p.Spec.Tags, set)
+	// 标签组合，继承索引
+	sets := req.AddTag(p, set, targetName)
 
 	if _, err = s.col.InsertMany(ctx, sets); err != nil {
-		return exception.NewInternalServerError("inserted a history document error, %s", err)
+		return exception.NewInternalServerError("inserted a policy document error, %s", err)
 	}
 
 	return nil
@@ -76,15 +90,14 @@ func (s *service) DescribePolicy(ctx context.Context, req *policy.DescribePolicy
 	if err := req.Validate(); err != nil {
 		return nil, exception.NewBadRequest(err.Error())
 	}
-
-	filter := bson.M{}
+	filters := bson.M{}
 	switch req.DescribeBy {
 	case policy.DESCRIBE_BY_id:
-		filter["_id"] = req.Id
+		filters["_id"] = req.Id
 	}
 
 	r := policy.NewDefaultPolicy()
-	if err := s.col.FindOne(ctx, filter).Decode(r); err != nil {
+	if err := s.col.FindOne(ctx, filters).Decode(r); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, exception.NewNotFound("policy %s not found", req)
 		}

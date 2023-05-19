@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/filter"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/history"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notify"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
@@ -26,6 +27,7 @@ type service struct {
 	policy  policy.RPCServer
 	notify  notify.RPCServer
 	history history.RPCServer
+	filter  filter.RPCServer
 }
 
 func (s *service) Config() error {
@@ -34,6 +36,7 @@ func (s *service) Config() error {
 	s.policy = app.GetGrpcApp("policy").(policy.RPCServer)
 	s.notify = app.GetGrpcApp("notify").(notify.RPCServer)
 	s.history = app.GetGrpcApp("history").(history.RPCServer)
+	s.filter = app.GetGrpcApp("filter").(filter.RPCServer)
 	return nil
 }
 

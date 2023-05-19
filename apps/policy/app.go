@@ -1,6 +1,7 @@
 package policy
 
 import (
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/imdario/mergo"
 	"github.com/infraboard/mcube/http/request"
@@ -152,10 +153,18 @@ func NewQueryPolicyRequestByName(targetName string) *QueryPolicyRequest {
 	}
 }
 
-func NewQueryPolicyRequestByDomain(sort string) *QueryPolicyRequest {
+func NewQueryPolicyRequestBySort(sort string) *QueryPolicyRequest {
 	return &QueryPolicyRequest{
 		Page: request.NewPageRequest(100, 1),
 		Sort: sort,
+	}
+}
+
+func NewQueryPolicyRequestByFilter(sort, filter string) *QueryPolicyRequest {
+	return &QueryPolicyRequest{
+		Page:       request.NewPageRequest(100, 1),
+		Sort:       sort,
+		FilterName: filter,
 	}
 }
 
@@ -172,15 +181,27 @@ func NewDeletePolicyRequest() *DeletePolicyRequest {
 	}
 }
 
-func (req *CreatePolicyRequest) AddTag(tags []*Tag, set *PolicySet) []interface{} {
+func (req *CreatePolicyRequest) AddTag(pos *Policy, set *PolicySet, targetName string) []interface{} {
 	pSet := make([]interface{}, 0, len(set.Items))
 
 	for _, v := range set.Items {
-		p, _ := NewPolicy(req)
+		cre := NewCreateRequest(req)
+		p, _ := NewPolicy(cre)
+
+		// 名称重组
+		p.Spec.Name = fmt.Sprint(v.Spec.Name + pos.Spec.Name)
 
 		// tag数组合并
 		p.Spec.Tags = append(p.Spec.Tags, v.Spec.Tags[:]...)
-		p.Spec.Tags = append(p.Spec.Tags, tags[:]...)
+		p.Spec.Tags = append(p.Spec.Tags, pos.Spec.Tags[:]...)
+		p.TargetName = targetName
+
+		// 父ID
+		p.ParentId = append(p.ParentId, v.Id)
+		p.ParentId = append(p.ParentId, pos.Id)
+
+		// 过滤条件继承
+		p.Spec.FilterName = v.Spec.FilterName
 
 		pSet = append(pSet, p)
 	}
@@ -188,6 +209,14 @@ func (req *CreatePolicyRequest) AddTag(tags []*Tag, set *PolicySet) []interface{
 	return pSet
 }
 
-func NewCreateRequest() *CreatePolicyRequest {
-	return &CreatePolicyRequest{}
+func NewCreateRequest(req *CreatePolicyRequest) *CreatePolicyRequest {
+	return &CreatePolicyRequest{
+		Name:       req.Name,
+		TargetId:   req.TargetId,
+		Domain:     req.Domain,
+		Namespace:  req.Namespace,
+		PolicyType: req.PolicyType,
+		Active:     req.Active,
+		Mention:    req.Mention,
+	}
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/filter"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/history"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/notify"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/policy"
@@ -13,7 +14,27 @@ import (
 
 func (s *service) TransformAlert(ctx context.Context, req *webhook.TransData) (*emptypb.Empty, error) {
 	// 查看规则、根据优先级进行排序
-	policySet, err := s.policy.QueryPolicy(ctx, policy.NewQueryPolicyRequestByDomain("priority"))
+	query := &policy.QueryPolicyRequest{}
+
+	// 查询filter
+	if req.IsFilter == "true" {
+		queryFilter := filter.NewDefaultQueryFilterRequest()
+		queryFilter.Meta = req.GroupLabels
+		set, err := s.filter.QueryFilter(ctx, queryFilter)
+		if err != nil {
+			return nil, err
+		}
+
+		if set != nil || set.Total > 0 {
+			// 根据条件进行判断
+			query = policy.NewQueryPolicyRequestByFilter("priority", set.Items[0].Spec.Name)
+		}
+	} else {
+		query = policy.NewQueryPolicyRequestBySort("priority")
+	}
+
+	// 查询策略
+	policySet, err := s.policy.QueryPolicy(ctx, query)
 	if err != nil {
 		return nil, err
 	}

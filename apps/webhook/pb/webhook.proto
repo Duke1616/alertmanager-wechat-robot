@@ -31,6 +31,9 @@ message TransData {
   // 警报信息
   // @gotags: bson:"alerts" json:"alerts"
   repeated Alert alerts = 7;
+  // 是否过滤匹配
+  // @gotags: bson:"-" json:"is_filter"
+  string is_filter = 8;
 }
 
 

@@ -60,7 +60,7 @@ message Policy {
   CreatePolicyRequest spec = 6;
   // 父亲ID
   // @gotags: bson:"parent_id" json:"parent_id"
-  string parent_id = 7;
+  repeated string parent_id = 7;
 }
 
 message PolicySet {
@@ -74,41 +74,50 @@ message PolicySet {
 
 message CreatePolicyRequest {
   // 策略名称
-  // @gotags: bson:"name" json:"name" validate:"required,lte=64"
+  // @gotags: bson:"name" json:"name"
   string name = 1;
   // 关联告警目标
   // @gotags: bson:"target_id" json:"target_id" validate:"required,lte=64"
   string target_id = 2;
   // 规则所属域
-  // @gotags: bson:"domain_id" json:"domain_id"
-  string domain_id = 3;
+  // @gotags: bson:"domain" json:"domain"
+  string domain = 3;
+  // 规则所属域
+  // @gotags: bson:"namespace" json:"namespace"
+  string namespace = 4;
   // 匹配标签
-  // @gotags: bson:"tags" json:"tags" validate:"required"
-  repeated Tag tags = 4;
+  // @gotags: bson:"tags" json:"tags"
+  repeated Tag tags = 5;
   // 策略类型
   // @gotags: bson:"policy_type" json:"policy_type"
-  POLICY_TYPE policy_type = 5;
+  POLICY_TYPE policy_type = 6;
   // 动作
   // @gotags: bson:"active" json:"active"
-  ACTIVE active = 6;
+  ACTIVE active = 7;
   // 描述
   // @gotags: bson:"description" json:"description"
-  string description = 7;
+  string description = 8;
   // 优先级，不填写自动计算，100为最高，以关联层数为条件
   // @gotags: bson:"priority" json:"priority"
-  int64 priority = 8;
+  int64 priority = 9;
   // @其他人
   // @gotags: bson:"mention" json:"mention"
-  Mention mention = 9;
+  Mention mention = 10;
   // 联合ID
-  // @gotags: bson:"ids" json:"ids"
-  repeated string ids = 10;
+  // @gotags: bson:"-" json:"ids"
+  repeated string ids = 11;
   // 联合系统ID
-  // @gotags: bson:"join_id" json:"join_id"
-  string join_id = 11;
+  // @gotags: bson:"-" json:"join_id"
+  string join_id = 12;
   // 策略创建方式
   // @gotags: bson:"create_type" json:"create_type"
-  CREATE_TYPE create_type = 12;
+  CREATE_TYPE create_type = 13;
+  // 是否创建filter
+  // @gotags: bson:"-" json:"is_filter"
+  bool is_filter  = 14;
+  // 过滤名称
+  // @gotags: bson:"filter_name" json:"filter_name"
+  string filter_name  = 15;
 }
 
 message Tag {
@@ -134,10 +143,4 @@ message Mention {
   // 通知指定用户
   // @gotags: bson:"users" json:"users"
   repeated string users = 3;
-}
-
-message CreateJoinPolicyRequest {
-  // policy_ids
-  // @gotags: bson:"policy_ids" json:"policy_ids"
-  repeated string policy_ids = 1;
 }
