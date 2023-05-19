@@ -17,20 +17,22 @@ func (s *service) TransformAlert(ctx context.Context, req *webhook.TransData) (*
 	query := &policy.QueryPolicyRequest{}
 
 	// 查询filter
+	query = policy.NewQueryPolicyRequestBySort("priority")
+
 	if req.IsFilter == "true" {
 		queryFilter := filter.NewDefaultQueryFilterRequest()
 		queryFilter.Meta = req.GroupLabels
 		set, err := s.filter.QueryFilter(ctx, queryFilter)
+		s.log.Debugf("set: %s", set)
+
 		if err != nil {
 			return nil, err
 		}
 
-		if set != nil || set.Total > 0 {
+		if set != nil && set.Total > 0 {
 			// 根据条件进行判断
 			query = policy.NewQueryPolicyRequestByFilter("priority", set.Items[0].Spec.Name)
 		}
-	} else {
-		query = policy.NewQueryPolicyRequestBySort("priority")
 	}
 
 	// 查询策略
@@ -41,6 +43,11 @@ func (s *service) TransformAlert(ctx context.Context, req *webhook.TransData) (*
 
 	// 策略匹配、验证
 	transSet := req.HasPolicy(policySet)
+
+	// TODO 未匹配的告警信息处理
+	if len(req.Alerts) != len(transSet.Items) {
+		s.log.Debug("有报警未被规则匹配中, 请留意")
+	}
 
 	// TODO 数据合并处理, 合并重复报警项 k,v
 
@@ -69,13 +76,13 @@ func (s *service) TransNotify(ctx context.Context, trans *webhook.TransformAlert
 	for _, alert := range trans.Alerts {
 		labels := alert.Labels
 		if labels["level"] == "P4" || labels["level"] == "P5" {
-			title = fmt.Sprintf("\n><font color=\"info\">**告警级别：%s      告警数量：%d**</font>",
+			title = fmt.Sprintf("\n<font color=\"info\">**告警级别：%s      告警数量：%d**</font>",
 				labels["level"], len(trans.Alerts))
 		} else if labels["level"] == "P3" || labels["level"] == "P2" {
-			title = fmt.Sprintf("\n><font color=\"warning\">**告警级别：%s      告警数量：%d**</font>",
+			title = fmt.Sprintf("\n<font color=\"warning\">**告警级别：%s      告警数量：%d**</font>",
 				labels["level"], len(trans.Alerts))
 		} else {
-			title = fmt.Sprintf("\n><font color=\"red\">**告警级别：%s      告警数量：%d**</font>",
+			title = fmt.Sprintf("\n<font color=\"red\">**告警级别：%s      告警数量：%d**</font>",
 				labels["level"], len(trans.Alerts))
 		}
 

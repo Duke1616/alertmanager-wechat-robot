@@ -21,7 +21,7 @@ func (s *service) CreateFilter(ctx context.Context, req *filter.CreateFilterRequ
 	return resp, nil
 }
 
-func (s *service) QueryTarget(ctx context.Context, req *filter.QueryFilterRequest) (*filter.FilterSet, error) {
+func (s *service) QueryFilter(ctx context.Context, req *filter.QueryFilterRequest) (*filter.FilterSet, error) {
 	query, err := newQueryFilterRequest(req)
 	if err != nil {
 		return nil, err

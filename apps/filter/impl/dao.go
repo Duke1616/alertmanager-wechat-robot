@@ -1,6 +1,7 @@
 package impl
 
 import (
+	"fmt"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/filter"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -34,6 +35,11 @@ func (r *queryFilterRequest) FindOptions() *options.FindOptions {
 
 func (r *queryFilterRequest) FindFilter() bson.M {
 	filters := bson.M{}
+
+	for i, v := range r.Meta {
+		metaKey := fmt.Sprint("meta." + i)
+		filters[metaKey] = v
+	}
 
 	return filters
 }
