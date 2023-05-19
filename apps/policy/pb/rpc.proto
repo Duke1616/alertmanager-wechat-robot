@@ -9,6 +9,8 @@ import "common/pb/github.com/infraboard/mcube/pb/request/request.proto";
 service RPC {
   // 创建规则信息
   rpc CreatePolicy(CreatePolicyRequest) returns(Policy);
+  // 同步系统规则
+  rpc SyncSystemPolicy(CreatePolicyRequest) returns(PolicySet);
   // 查看规则信息
   rpc DescribePolicy(DescribePolicyRequest) returns(Policy);
   // 查询群组下的所有规则

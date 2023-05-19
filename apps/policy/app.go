@@ -220,3 +220,12 @@ func NewCreateRequest(req *CreatePolicyRequest) *CreatePolicyRequest {
 		Mention:    req.Mention,
 	}
 }
+
+func NewDefaultCreateRequestInSystem() *CreatePolicyRequest {
+	return &CreatePolicyRequest{
+		CreateType: CREATE_TYPE_SYSTEM,
+		PolicyType: POLICY_TYPE_RADIO,
+		IsFilter:   false,
+		FilterName: "",
+	}
+}

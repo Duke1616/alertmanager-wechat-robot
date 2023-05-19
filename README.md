@@ -1,12 +1,13 @@
 # alertmanager-wechat-robot
 
 ## 项目说明
-### 项目功能
-- alertmanager webhook对接企业微信，进行报警通知
-- 通过`common label`和`group label`标签信息，自定义配置策略，实现 @相关人员通知
-- 企业微信用户群组机器人信息，群组人员相关信息管理
-- 根据vmalert服务API同步告警规则，报警历史信息
+### 项目设计
+- 接收alertmanager webhook，推送到企业微信群组机器人进行报警
+- 通过告警标签信息，自定义配置策略，实现 @相关人员通知
+- setting配置alert地址，通过API同步告警规则
+- 告警历史记录、分析、dashboard进行展示
 - UI页面管理，待完善
+
 ### 目录结构
 ```
 ├── protocol                       # rpc / http 功能加载
@@ -57,8 +58,8 @@
 ## 启动服务
 ### mongo创建
 ```
-use robot
-db.createUser({user: "robot", pwd: "123456", roles: [{ role: "dbOwner", db: "robot" }]})
+use monitoring
+db.createUser({user: "monitoring", pwd: "123456", roles: [{ role: "dbOwner", db: "monitoring" }]})
 ```
 
 ### 配置文件
@@ -79,11 +80,6 @@ endpoints = ["127.0.0.1:27017"]
 username = "robot"
 password = "123456"
 database = "robot"
-
-[vmalert]
-schema = "http"
-host = "127.0.0.1"
-port = "8000"
 ```
 
 ### 运行服务
