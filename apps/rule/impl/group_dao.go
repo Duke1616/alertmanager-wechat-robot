@@ -25,7 +25,7 @@ func (s *service) saveGroups(ctx context.Context, rules *rule.Rules, setting *se
 	}
 
 	// 插入新增group记录
-	if _, err := s.group.InsertMany(ctx, groupSet); err != nil {
+	if _, err = s.group.InsertMany(ctx, groupSet); err != nil {
 		return nil, exception.NewInternalServerError("inserted a group document error, %s", err)
 	}
 

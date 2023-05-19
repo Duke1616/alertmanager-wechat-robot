@@ -3,13 +3,14 @@ package impl
 import (
 	"context"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/rule"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/setting"
 	"github.com/infraboard/mcube/exception"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (s *service) saveRules(ctx context.Context, rules *rule.Rules, groupIds []string) error {
+func (s *service) saveRules(ctx context.Context, rules *rule.Rules, groupIds []string, conf *setting.Setting) error {
 	// 删除rule
 	_, err := s.DeleteRule(ctx, rule.NewDeleteRuleRequest(groupIds))
 	if err != nil {
@@ -18,9 +19,9 @@ func (s *service) saveRules(ctx context.Context, rules *rule.Rules, groupIds []s
 
 	// 新增rule
 	for _, v := range rules.Data.Groups {
-		ruleset := rules.RuleSet(v)
+		ruleset := rules.RuleSet(v, conf)
 
-		if _, err := s.rule.InsertMany(ctx, ruleset); err != nil {
+		if _, err = s.rule.InsertMany(ctx, ruleset); err != nil {
 			return exception.NewInternalServerError("inserted a rule document error, %s", err)
 		}
 	}

@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type RPCClient interface {
 	// 创建规则信息
 	CreatePolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*Policy, error)
+	// 同步系统规则
+	SyncSystemPolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*PolicySet, error)
 	// 查看规则信息
 	DescribePolicy(ctx context.Context, in *DescribePolicyRequest, opts ...grpc.CallOption) (*Policy, error)
 	// 查询群组下的所有规则
@@ -45,6 +47,15 @@ func NewRPCClient(cc grpc.ClientConnInterface) RPCClient {
 func (c *rPCClient) CreatePolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*Policy, error) {
 	out := new(Policy)
 	err := c.cc.Invoke(ctx, "/robot.policy.RPC/CreatePolicy", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCClient) SyncSystemPolicy(ctx context.Context, in *CreatePolicyRequest, opts ...grpc.CallOption) (*PolicySet, error) {
+	out := new(PolicySet)
+	err := c.cc.Invoke(ctx, "/robot.policy.RPC/SyncSystemPolicy", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +104,8 @@ func (c *rPCClient) UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, o
 type RPCServer interface {
 	// 创建规则信息
 	CreatePolicy(context.Context, *CreatePolicyRequest) (*Policy, error)
+	// 同步系统规则
+	SyncSystemPolicy(context.Context, *CreatePolicyRequest) (*PolicySet, error)
 	// 查看规则信息
 	DescribePolicy(context.Context, *DescribePolicyRequest) (*Policy, error)
 	// 查询群组下的所有规则
@@ -110,6 +123,9 @@ type UnimplementedRPCServer struct {
 
 func (UnimplementedRPCServer) CreatePolicy(context.Context, *CreatePolicyRequest) (*Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePolicy not implemented")
+}
+func (UnimplementedRPCServer) SyncSystemPolicy(context.Context, *CreatePolicyRequest) (*PolicySet, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SyncSystemPolicy not implemented")
 }
 func (UnimplementedRPCServer) DescribePolicy(context.Context, *DescribePolicyRequest) (*Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribePolicy not implemented")
@@ -150,6 +166,24 @@ func _RPC_CreatePolicy_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCServer).CreatePolicy(ctx, req.(*CreatePolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPC_SyncSystemPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCServer).SyncSystemPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/robot.policy.RPC/SyncSystemPolicy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCServer).SyncSystemPolicy(ctx, req.(*CreatePolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,6 +270,10 @@ var RPC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreatePolicy",
 			Handler:    _RPC_CreatePolicy_Handler,
+		},
+		{
+			MethodName: "SyncSystemPolicy",
+			Handler:    _RPC_SyncSystemPolicy_Handler,
 		},
 		{
 			MethodName: "DescribePolicy",

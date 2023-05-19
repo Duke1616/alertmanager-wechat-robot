@@ -31,7 +31,7 @@ func (s *service) SyncRule(ctx context.Context, req *rule.SyncRuleRequest) (*rul
 	}
 
 	// 保存告警规则信息
-	err = s.saveRules(ctx, rules, groupIds)
+	err = s.saveRules(ctx, rules, groupIds, conf)
 	if err != nil {
 		return nil, err
 	}

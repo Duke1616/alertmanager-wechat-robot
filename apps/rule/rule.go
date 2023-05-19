@@ -2,6 +2,7 @@ package rule
 
 import (
 	"encoding/json"
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/setting"
 	"github.com/infraboard/mcube/http/request"
 	"io/ioutil"
 	"net/http"
@@ -39,7 +40,7 @@ func GetRules(url string) (*Rules, error) {
 	return rules, nil
 }
 
-func (req *Rules) RuleSet(group *Group) []interface{} {
+func (req *Rules) RuleSet(group *Group, conf *setting.Setting) []interface{} {
 	rus := make([]interface{}, 0, len(group.Rules))
 	for i := range group.Rules {
 		ru := &Rule{
@@ -48,6 +49,8 @@ func (req *Rules) RuleSet(group *Group) []interface{} {
 			Query:       group.Rules[i].Query,
 			GroupId:     group.Rules[i].GroupId,
 			Labels:      group.Rules[i].Labels,
+			Domain:      conf.Spec.Domain,
+			Namespace:   conf.Spec.Namespace,
 			Annotations: group.Rules[i].Annotations,
 			GroupName:   group.Name,
 			Level:       group.Rules[i].Labels["level"],

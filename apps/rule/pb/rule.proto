@@ -13,24 +13,30 @@ message Rule {
   // 组id
   // @gotags: bson:"group_name" json:"group_name"
   string group_name = 3;
+  // 组所在域
+  // @gotags: bson:"domain" json:"domain" validate:"required,lte=64"
+  string domain = 4;
+  // 组所在名称空间
+  // @gotags: bson:"namespace" json:"namespace" validate:"required,lte=64"
+  string namespace = 5;
   // 规则名称
   // @gotags: bson:"name" json:"name" validate:"required,lte=64"
-  string name = 4;
+  string name = 6;
   // 规则查询语句
   // @gotags: bson:"query" json:"query"
-  string query = 5;
+  string query = 7;
   // 规则查询语句
   // @gotags: bson:"level" json:"level"
-  string level = 6;
+  string level = 8;
   // 规则查询语句
   // @gotags: bson:"service" json:"service"
-  string service  = 7;
+  string service  = 9;
   // 规则标签
   // @gotags: bson:"labels" json:"labels"
-  map<string, string> labels = 8;
+  map<string, string> labels = 10;
   // 规则注释
   // @gotags: bson:"annotations" json:"annotations"
-  map<string, string> annotations = 9;
+  map<string, string> annotations = 11;
 }
 
 message RuleSet {
