@@ -77,9 +77,9 @@ port = "16890"
 
 [mongodb]
 endpoints = ["127.0.0.1:27017"]
-username = "robot"
+username = "monitoring"
 password = "123456"
-database = "robot"
+database = "monitoring"
 ```
 
 ### 运行服务
