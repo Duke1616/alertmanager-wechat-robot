@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Duke1616/alertmanager-wechat-robot/apps/history"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/setting"
 	"github.com/Duke1616/alertmanager-wechat-robot/apps/target"
 	app "github.com/Duke1616/alertmanager-wechat-robot/register"
@@ -54,6 +55,18 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Metadata(restfulspec.KeyOpenAPITags, tags).
 		Writes(setting.Setting{}).
 		Returns(200, "OK", setting.Setting{}).
+		Returns(404, "Not Found", nil))
+
+	ws.Route(ws.GET("/").To(h.QuerySetting).
+		Doc("查询告警历史信息").
+		Metadata(label.Resource, history.AppName).
+		Metadata(label.Auth, true).
+		Metadata(restfulspec.KeyOpenAPITags, tags).
+		Param(ws.QueryParameter("page_size", "每一页的数据条数").DataType("uint64")).
+		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
+		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
+		Writes(setting.SettingSet{}).
+		Returns(200, "OK", setting.SettingSet{}).
 		Returns(404, "Not Found", nil))
 }
 

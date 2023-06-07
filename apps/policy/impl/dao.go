@@ -58,7 +58,7 @@ func (r *queryPolicyRequest) FindFilter() bson.M {
 	}
 
 	if r.CreateType != "" {
-		filter["create_type"], _ = policy.ParseCREATE_TYPEFromString(r.CreateType)
+		filter["spec.create_type"], _ = policy.ParseCREATE_TYPEFromString(r.CreateType)
 	}
 
 	if r.PolicyType != "" {

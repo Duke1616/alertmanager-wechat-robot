@@ -64,6 +64,8 @@ func (h *handler) Registry(ws *restful.WebService) {
 		Param(ws.QueryParameter("page_number", "请求的第页数").DataType("uint64")).
 		Param(ws.QueryParameter("offset", "偏移").DataType("int64")).
 		Param(ws.QueryParameter("target_name", "查询在target_name下的所有policy规则").DataType("string")).
+		Param(ws.QueryParameter("create_type", "根据创建策略所有policy规则").DataType("string")).
+		Param(ws.QueryParameter("policy_type", "根据策略类型所有policy规则").DataType("string")).
 		Writes(policy.PolicySet{}).
 		Returns(200, "OK", policy.PolicySet{}).
 		Returns(404, "Not Found", nil))

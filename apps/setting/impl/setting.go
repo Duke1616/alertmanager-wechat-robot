@@ -41,3 +41,36 @@ func (s *service) DescribeSetting(ctx context.Context, req *setting.DescribeSett
 
 	return resp, nil
 }
+
+func (s *service) QuerySetting(ctx context.Context, req *setting.QuerySettingRequest) (*setting.SettingSet, error) {
+	query, err := newQuerySettingRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	s.log.Debugf("query setting filter: %s", query.FindFilter())
+	resp, err := s.col.Find(ctx, query.FindFilter(), query.FindOptions())
+
+	if err != nil {
+		return nil, exception.NewInternalServerError("find setting error, error is %s", err)
+	}
+
+	set := setting.NewSettingSet()
+	// 循环插入数据
+	for resp.Next(ctx) {
+		ins := setting.NewSettingHistory()
+		if err = resp.Decode(ins); err != nil {
+			return nil, exception.NewInternalServerError("decode setting error, error is %s", err)
+		}
+		set.Add(ins)
+	}
+
+	// 计算数量
+	count, err := s.col.CountDocuments(ctx, query.FindFilter())
+	if err != nil {
+		return nil, exception.NewInternalServerError("get setting count error, error is %s", err)
+	}
+	set.Total = count
+
+	return set, nil
+}

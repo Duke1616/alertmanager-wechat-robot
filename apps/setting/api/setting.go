@@ -35,3 +35,14 @@ func (h *handler) DescribeSetting(r *restful.Request, w *restful.Response) {
 
 	utils.Success(w, ins, "查询配置成功")
 }
+
+func (h *handler) QuerySetting(r *restful.Request, w *restful.Response) {
+	req := setting.NewQuerySettingRequestFromHTTP(r.Request)
+	ins, err := h.service.QuerySetting(r.Request.Context(), req)
+	if err != nil {
+		response.Failed(w, err)
+		return
+	}
+
+	utils.Success(w, ins, "查询配置成功")
+}
